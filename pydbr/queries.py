@@ -7,10 +7,11 @@ import csv
 import datetime 
 import MySQLdb
 import os 
+import sys 
 
 def scan_queries(path):
     ret = []
-    for root, dirs, files in os.walk(os.path.join(path, "works")):
+    for root, dirs, files in os.walk(path):
         for f in filter(lambda x: x.endswith(".xml"), files):
             p = os.path.join(root, f)
             with open(p, "r") as f:
@@ -70,6 +71,13 @@ def __day_is_ok(xml):
 
     return False
 
+def print_email_on_screen(body, csv_files):
+    print("Body:")
+    print(body)
+    print("CSV Files:")
+    for cv in csv_files:
+        print(cv)
+
 def process_xml(conf, xml):
     el = []
     csvs = []
@@ -88,8 +96,8 @@ def process_xml(conf, xml):
             table = zip(*table)
 
         if query.find("csv").text != "0":
-            csName = os.path.join(conf.basepath, "tmp", query.find("csv_name").text)
-            cs = generate_csv(csName, table)
+            cs_name = os.path.join(conf.tmp_folder, query.find("csv_name").text)
+            cs = generate_csv(cs_name, table)
             csvs.append(cs)
         else:
             el.extend(render_table(table))
@@ -116,12 +124,12 @@ parser.add_argument("--xml", help="The path of the xml that you want to use. If 
 parser.add_argument("--reportpath", help="The default path of the project", default=None)
 parser.add_argument("--smtp-host", help="The SMTP host", default="localhost", dest="smtp_host")
 parser.add_argument("--smtp-port", help="The SMTP host port", default="25", dest="smtp_port")
+parser.add_argument("--csv-tmp-folder", help="The folder where the csv files will be saved temporary", default="/tmp", dest="tmp_folder")
 
-def main(conf):
-    conf = parser.parse_args()
+def main(*args):
+    conf = parser.parse_args(args) if len(args) > 0 else parser.parse_args()
     if conf.xml is None and conf.reportpath is None:
-        print("Please use --xml or --reportpath")
-        exit(1)
+        raise Exception("Please use --xml or --reportpath")
     
     if conf.xml is None:
         xmls = scan_queries(conf.reportpath)
@@ -131,7 +139,8 @@ def main(conf):
 
     for xml in xmls:
         process_xml(conf, xml)
+    
+    return True
 
 if __name__ == '__main__':
-    conf = parser.parse_args()
-    main(conf)
+    main(*sys.argv[1:])

@@ -25,5 +25,5 @@ setup(
         'console_scripts': [
             'pydbr=pydbr.queries:main',
             ],
-        },]
+        },
 )
