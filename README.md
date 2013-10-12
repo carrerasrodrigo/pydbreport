@@ -11,6 +11,19 @@ Every report that we want to send can contain many queries as we want to. The qu
 an xml file. 
 
 
+How to install it?
+-----------------------
+You can install it with pip doing the following:
+    
+    $ pip install -e git+https://github.com/carrerasrodrigo/pydbreport.git#egg=pydbreport
+    
+or you can clone this repository and install it. 
+
+    $ git clone https://github.com/carrerasrodrigo/pydbreport.git
+    $ cd pydbreport
+    $ python setup.py install
+    
+    
 How to create a report?
 -----------------------
 
