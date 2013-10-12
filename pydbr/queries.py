@@ -1,13 +1,14 @@
 #!/usr/bin/python
-from send_email import send_email
-from xml.etree import ElementTree as ET # or Alien??
-
 import argparse
 import csv
 import datetime 
 import MySQLdb
 import os 
 import sys 
+
+from jinja2 import Template
+from send_email import send_email
+from xml.etree import ElementTree as ET # or Alien??
 
 def scan_queries(path):
     """Scans all xml files based on the extension
@@ -47,23 +48,24 @@ def run_query(dbName, user, password, host, query):
 
     return rows
 
-def render_table(table):
+def render_table(query, table):
     """Renders a matrix into a html table
 
+    :param query: The query that you are rendering
     :param matrix: The matrix that you want to render
     :returns: An string representing an html table
     """
-    lines = []
-    lines.append('<table style="border-color: #515151; border-style: solid; border-width: 1px;">')
-    for row in table:
-        r = '<tr>'
-        for cell in row:
-            r += '<td style="border-right-color: #515151; border-right-style: solid; border-right-width: 1px; min-width:300px">{0}</td>'.format(cell)
-        r += "/<tr>"
-        lines.append(r)
-    lines.append("</table>")    
+    if query.find("template_path") is None:
+        template_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 
+            "templates", "base.jinja")
+    else:
+        template_path = query.find("template_path").text
+    
+    with open(template_path, "r") as f:
+        template_content = f.read()
 
-    return lines
+    template = Template(template_content)
+    return template.render(table=table)
 
 def generate_csv(name, table):
     """Generates a csv file based on a matrix
@@ -114,6 +116,7 @@ def process_xml(conf, xml):
     if not __day_is_ok(xml):
         # Ignores the xml files that we dont have to run that day
         return 
+    
     for query in xml.find("./queries").getchildren():
         table = run_query(query.find("db_name").text,
             query.find("db_user").text,
@@ -130,7 +133,7 @@ def process_xml(conf, xml):
             cs = generate_csv(cs_name, table)
             csvs.append(cs)
         else:
-            el.extend(render_table(table))
+            el.extend(render_table(query, table))
         
     emails = []
     if conf.output == "email":
@@ -166,7 +169,7 @@ def main(*args):
     else:
         with open(conf.xml, "r") as f:
             xmls = [ET.XML(f.read())]
-
+    
     for xml in xmls:
         process_xml(conf, xml)
     

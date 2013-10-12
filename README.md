@@ -77,6 +77,8 @@ of the month that the report will be excuted. If the tag **day** and **weekday**
     **csv_name** The name of the csv attached. If **cvs** is 0, it will be ignored. 
     **code** The SQL that will be run into the database. It's recommended to put this code into
         a CDATA tag. 
+    **template_path** This tag represent the absolute path of the template we want to use to render our query. If we
+        miss this tag *PyDbReport* it's going to use a default template.
 
 
 
@@ -106,3 +108,45 @@ If you are looking into run reports every day you can add **pydbr** into a cronj
 the following code to your crontab:
     
     0 * * * * pydbr --xml myreport.xml
+
+
+### Personalize your emails, Template System
+
+PyDbReport uses jinja2 in order to render the templates, by default it ships with basic template
+to render the tables but you can define yours using jinja sintaxs. For example:
+
+```html
+{# My template #}
+<p>This is my awesome template</p>
+<table>
+    {% for row in table %}
+        <tr>
+            {% for cell in row %}
+                <td>
+                    {{ cell }}
+                </td>
+            {% endfor %}
+        </tr>
+    {% endfor %}
+</table>
+```
+
+Then you need to specify to *pydbr* witch template do you want to use for your query.
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<job>
+   ...
+    <queries>
+        <query>
+            ...
+            <template_path>/absolute_path/to/my/template.jinja</template_path>
+            <code>
+                <![CDATA[
+                    select first_name, rating from famous_people where age < 70; 
+                ]]>
+            </code>
+        </query>
+    </queries>
+</job>
+```

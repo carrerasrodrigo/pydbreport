@@ -32,12 +32,23 @@ class PyDbRTest(unittest.TestCase):
         self.assertEqual(query[0][0], "first_name")
         
     def test_render_table(self):
+        xmls = scan_queries(os.path.join(self.test_path, "works"))
         query = run_query("pydbreport", "root", "admin", "localhost", 
             "select first_name, rating from famous_people limit 2;")
-        r = render_table(query)
-        self.assertFalse("first_name" in r)
-        self.assertFalse("rating" in r)
-        self.assertFalse("<table>" in r)
+        r = render_table(xmls[0].find("queries").find("query"), query)
+        self.assertTrue("first_name" in r)
+        self.assertTrue("rating" in r)
+        self.assertTrue("<table" in r)
+
+    def test_render_table(self):
+        xmls = scan_queries(os.path.join(self.test_path, "works"))
+        query = run_query("pydbreport", "root", "admin", "localhost", 
+            "select first_name, rating from famous_people limit 2;")
+        r = render_table(xmls[0].find("queries").find("query"), query)
+        self.assertTrue("first_name" in r)
+        self.assertTrue("rating" in r)
+        self.assertTrue("<table" in r)
+
 
 if __name__ == '__main__':
     unittest.main()

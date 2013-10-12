@@ -1,0 +1,12 @@
+{# Base template for rendering #}
+<table style="border-color: #515151; border-style: solid; border-width: 1px;">
+    {% for row in table %}
+        <tr>
+            {% for cell in row %}
+                <td style="border-right-color: #515151; border-right-style: solid; border-right-width: 1px; min-width:300px">
+                    {{ cell }}
+                </td>
+            {% endfor %}
+        </tr>
+    {% endfor %}
+</table>

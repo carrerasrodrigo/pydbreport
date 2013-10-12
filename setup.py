@@ -10,7 +10,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='Python Db Report',
-    version='0_not_functional',
+    version='0.0.1',
     url='https://github.com/carrerasrodrigo/pydbreport',
     license='mit',
     author='Rodrigo N. Carreras',
@@ -21,6 +21,7 @@ setup(
     zip_safe=False,
     platforms='any',
     classifiers=[],
+    install_requires=["jinja2>2"],
     entry_points={
         'console_scripts': [
             'pydbr=pydbr.queries:main',
