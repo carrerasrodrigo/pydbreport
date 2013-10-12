@@ -8,6 +8,18 @@ import smtplib, os
 
 def send_email(sfrom, to, subject, body, files=[], host="localhost",
     port=25):
+    """Send an email
+
+    :param sfrom: The email of the sender
+    :param to: A list of receivers of the email
+    :param subject: The subject of the email
+    :param body: The body of the email
+    :param files: A list of absolute path of the files that we want to attach
+        to the email.
+    :param host: The host that we want to connect to send the emails
+    :param port: The port of the host that we want to connect
+    :returns: A list of ElementTree
+    """
     msg = MIMEMultipart()
     msg['From'] = sfrom
     msg['To'] = ",".join(to)
