@@ -39,6 +39,7 @@ that you want to send. The format of the xml it's the following:
         <email>email2@t.com</email>
     </emails>
     <subject>test report</subject>
+    <sender>sender@email.com</sender>
     <day>*</day>
     <queries>
         <query>
@@ -60,6 +61,7 @@ that you want to send. The format of the xml it's the following:
 ```
  - Into the tag **emails** we specify all the recipients that will receive the email
  - **subject** represent the subject of the email 
+ - **sender** an email that represent the sender of the report
  - **weekday** will specify a list of days that the report it's gonna be executed. 
  You can use '*' to execute the report every day or '0,1' to send 
  the email mondays and tuesday.

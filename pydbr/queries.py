@@ -137,8 +137,8 @@ def process_xml(conf, xml):
         
     emails = []
     if conf.output == "email":
-        if args.emails is not None:
-            emails = args.emails.split("|")
+        if conf.emails is not None:
+            emails = conf.emails.split("|")
         else:
             for em in xml.findall("*/email"):
                 emails.append(em.text)
@@ -161,6 +161,7 @@ parser.add_argument("--csv-tmp-folder", help="The folder where the csv files wil
 
 def main(*args):
     conf = parser.parse_args(args) if len(args) > 0 else parser.parse_args()
+
     if conf.xml is None and conf.reportpath is None:
         raise Exception("Please use --xml or --reportpath")
     

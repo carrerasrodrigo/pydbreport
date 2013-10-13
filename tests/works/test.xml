@@ -4,6 +4,7 @@
         <email>test@t.com</email>
     </emails>
     <subject>test report</subject>
+    <sender>sender@email.com</sender>
     <day>*</day>
     <queries>
         <query>

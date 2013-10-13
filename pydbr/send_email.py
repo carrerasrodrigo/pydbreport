@@ -36,7 +36,7 @@ def send_email(sfrom, to, subject, body, files=[], host="localhost",
         msg.attach(part)
     
     try:
-        smtp = smtplib.SMTP(smtp_host, smtp_port)
+        smtp = smtplib.SMTP(host, port)
         smtp.sendmail(sfrom, to, msg.as_string())
         smtp.close()
     except:
