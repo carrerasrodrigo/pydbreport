@@ -5,7 +5,6 @@ import datetime
 import os 
 import pymysql
 import sys 
-
 from jinja2 import Template
 from send_email import send_email
 from xml.etree import ElementTree as ET # or Alien??
@@ -75,7 +74,7 @@ def generate_csv(name, table):
     :param table: The matrix that we want to add into the csv
     :returns: The full path of the csv
     """
-    with open(name, 'wb') as csvfile:
+    with open(name, 'w') as csvfile:
         writer = csv.writer(csvfile, delimiter=',',
                             quotechar='|', quoting=csv.QUOTE_MINIMAL)
         for row in table:

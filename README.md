@@ -152,3 +152,7 @@ Then you need to specify to *pydbr* witch template do you want to use for your q
     </queries>
 </job>
 ```
+
+### Tested
+
+This project has been tested on Python 2.7+ and Python 3.3+

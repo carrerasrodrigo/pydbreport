@@ -7,10 +7,9 @@ A small report system for python
 """
 from setuptools import setup, find_packages
 
-
 setup(
     name='Python Db Report',
-    version='0.0.1',
+    version='0.0.2',
     url='https://github.com/carrerasrodrigo/pydbreport',
     license='mit',
     author='Rodrigo N. Carreras',
@@ -21,7 +20,7 @@ setup(
     zip_safe=False,
     platforms='any',
     classifiers=[],
-    install_requires=["jinja2>2"],
+    install_requires=["jinja2>2", "PyMySQL>0.6"],
     entry_points={
         'console_scripts': [
             'pydbr=pydbr.queries:main',

@@ -1,13 +1,17 @@
 # -*- coding: utf-8 -*-
-import asyncore
 import os
+import sys
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "pydbr"))
+
+import asyncore
 import threading
 import unittest
 import logging
 
-
 from pydbr.queries import main, scan_queries, run_query, render_table
 from smtpd import SMTPServer
+
 
 class EmailServer(SMTPServer):
     messages = []
@@ -70,7 +74,7 @@ class PyDbRTest(unittest.TestCase):
         self.assertTrue("<table" in r)
 
     def test_run_report(self):
-        p = os.path.join("works", "test_no_csv.xml")
+        p = os.path.join(self.test_path, "works", "test_no_csv.xml")
         arg = "--smtp-port=2525 --smtp-host=localhost --xml={0}".format(p)
         main(*arg.split(" "))
         message = self.server_em.messages.pop()
@@ -79,14 +83,14 @@ class PyDbRTest(unittest.TestCase):
         self.assertTrue("first_name" in message)
 
     def test_emails(self):
-        p = os.path.join("works", "test_no_csv.xml")
+        p = os.path.join(self.test_path, "works", "test_no_csv.xml")
         arg = "--smtp-port=2525 --smtp-host=localhost --xml={0} --emails=noemail@email.com".format(p)
         main(*arg.split(" "))
         message = self.server_em.messages.pop()
         self.assertTrue("To: noemail@email.com" in message)
 
     def test_reportpath(self):
-        p = os.path.join("works")
+        p = os.path.join(self.test_path, "works")
         arg = "--smtp-port=2525 --smtp-host=localhost --reportpath={0}".format(p)
         main(*arg.split(" "))
         self.assertEqual(len(self.server_em.messages), self.xml_test_cases)

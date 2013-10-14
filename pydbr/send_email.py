@@ -1,10 +1,18 @@
 #--------------------------------------
-from email.MIMEMultipart import MIMEMultipart
-from email.MIMEBase import MIMEBase
-from email.MIMEText import MIMEText
-from email.Utils import formatdate
-from email import Encoders
-import smtplib, os
+import os, smtplib
+try:
+    from email.MIMEMultipart import MIMEMultipart
+    from email.MIMEBase import MIMEBase
+    from email.MIMEText import MIMEText
+    from email.Utils import formatdate    
+    from email import Encoders as encoders
+except ImportError:
+    # Python 3
+    from email.mime.multipart import MIMEMultipart
+    from email.mime.base import MIMEBase
+    from email.mime.text import MIMEText
+    from email.utils import formatdate
+    from email import encoders
 
 def send_email(sfrom, to, subject, body, files=[], host="localhost",
     port=25):
@@ -30,8 +38,9 @@ def send_email(sfrom, to, subject, body, files=[], host="localhost",
     
     for f in files:
         part = MIMEBase('application', "octet-stream")
-        part.set_payload(open(f,"rb").read())
-        Encoders.encode_base64(part)
+        with open(f, "rb") as fr:
+            part.set_payload(fr.read())
+        encoders.encode_base64(part)
         part.add_header('Content-Disposition', 'attachment; filename="%s"' % os.path.basename(f))
         msg.attach(part)
     
