@@ -2,8 +2,8 @@
 import argparse
 import csv
 import datetime 
-import MySQLdb
 import os 
+import pymysql
 import sys 
 
 from jinja2 import Template
@@ -24,27 +24,28 @@ def scan_queries(path):
                 ret.append(ET.XML(f.read()))
     return ret
 
-def run_query(dbName, user, password, host, query):
+def run_query(db_name, user, password, host, query):
     """Run a SQL query in MySql
 
-    :param dbName: The name of the database
+    :param db_name: The name of the database
     :param user: The connection user for the database
     :param password: The password to connect to the database
     :param host: The host where you are going to connect
     :param query: The query that you want to run
     :returns: A matrix of queries
     """
-    db = MySQLdb.connect(host=host,
-                     user=user,
-                      passwd=password,
-                      db=dbName)
+    db = pymysql.connect(host=host, 
+        user=user, 
+        passwd=password, 
+        db=db_name)
     cur = db.cursor()
     cur.execute(query)
-
+    
     rows = [[i[0] for i in cur.description]]
-    for row in cur.fetchall():
+    for row in cur:
         rows.append(row)
-    db.close()
+    cur.close()
+    db.close()    
 
     return rows
 
@@ -89,11 +90,11 @@ def __day_is_ok(xml):
     weekdays = xml.find("weekday")
     
     if days is not None:
-	l = days.text.replace(" ", "").split(",")
+        l = days.text.replace(" ", "").split(",")
         return str(day) in l or "*" in l
 
     if weekdays is not None:
-	l = weekdays.text.replace(" ", "").split(",")
+        l = weekdays.text.replace(" ", "").split(",")
         return str(weekday) in l or "*" in l
 
     return False
