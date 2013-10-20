@@ -94,6 +94,15 @@ class PyDbRTest(unittest.TestCase):
         message = self.server_em.messages.pop()
         self.assertTrue("To: noemail@email.com" in message)
 
+    def test_bcc_cc(self):
+        p = os.path.join(self.test_path, "works", "test_no_csv.xml")
+        arg = "--smtp-port=2525 --smtp-host=localhost --xml={0}".format(p)
+        main(*arg.split(" "))
+        message = self.server_em.messages.pop()
+        self.assertTrue("To: test@t.com" in message)
+        self.assertTrue("Bcc: bcc@bcc.com" in message)
+        self.assertTrue("Cc: cc@cc.com" in message)
+
     def test_reportpath(self):
         p = os.path.join(self.test_path, "works")
         arg = "--smtp-port=2525 --smtp-host=localhost --reportpath={0}".format(p)

@@ -14,7 +14,7 @@ except ImportError:
     from email.utils import formatdate
     from email import encoders
 
-def send_email(sfrom, to, subject, body, files=[], host="localhost",
+def send_email(sfrom, to, subject, body, cc=[], bcc=[], files=[], host="localhost",
     port=25):
     """Send an email
 
@@ -31,6 +31,8 @@ def send_email(sfrom, to, subject, body, files=[], host="localhost",
     msg = MIMEMultipart()
     msg['From'] = sfrom
     msg['To'] = ",".join(to)
+    msg['Cc'] = ",".join(cc)
+    msg['Bcc'] = ",".join(bcc)
     msg['Date'] = formatdate(localtime=True)
     msg['Subject'] = subject
 
@@ -46,7 +48,7 @@ def send_email(sfrom, to, subject, body, files=[], host="localhost",
     
     try:
         smtp = smtplib.SMTP(host, port)
-        smtp.sendmail(sfrom, to, msg.as_string())
+        smtp.sendmail(sfrom, to + cc + bcc, msg.as_string())
         smtp.close()
     except:
         print("Error sending the email")

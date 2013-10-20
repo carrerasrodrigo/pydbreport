@@ -37,6 +37,8 @@ that you want to send. The format of the xml it's the following:
     <emails>
         <email>email1@t.com</email>
         <email>email2@t.com</email>
+        <cc>cc@cc.com</cc>
+        <bcc>bcc@bcc.com</bcc>
     </emails>
     <subject>test report</subject>
     <sender>sender@email.com</sender>
@@ -59,7 +61,7 @@ that you want to send. The format of the xml it's the following:
     </queries>
 </job>
 ```
- - Into the tag **emails** we specify all the recipients that will receive the email
+ - Into the tag **emails** we specify all the recipients that will receive the email. Note that you can use *email*, *cc* or *bcc* depending with kind of sender do you wanna use.
  - **subject** represents the subject of the email 
  - **sender** an email that represents the sender of the report
  - **weekday** will specify a list of days on witch the report it's gonna be executed. 

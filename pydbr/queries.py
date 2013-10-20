@@ -137,15 +137,25 @@ def process_xml(conf, xml):
         
     emails = []
     if conf.output == "email":
+        cc = []
+        bcc = []
         if conf.emails is not None:
             emails = conf.emails.split("|")
         else:
             for em in xml.findall("*/email"):
                 emails.append(em.text)
+
+            for em in xml.findall("*/cc"):
+                cc.append(em.text)
+
+            for em in xml.findall("*/bcc"):
+                bcc.append(em.text)
+
         if len(emails) > 0:
             send_email(xml.find("sender").text, emails, 
                 xml.find("subject").text,
-                "".join(el), csvs, host=conf.smtp_host, port=conf.smtp_port)
+                "".join(el), cc=cc, bcc=bcc, files=csvs, 
+                host=conf.smtp_host, port=conf.smtp_port)
     else:
         print_email_on_screen("".join(el), csvs)
 
