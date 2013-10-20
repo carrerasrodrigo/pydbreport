@@ -23,6 +23,11 @@ class PyDbRTest(unittest.TestCase):
     test_path = os.path.dirname(__file__)
     xml_test_cases = 2
 
+    def setUp(self):
+        # Compatibility with Python 2.6
+        if getattr(self, "server_em", None) is None:
+            self.setUpClass()
+
     @classmethod
     def setUpClass(cls):
         def start_server():

@@ -155,4 +155,4 @@ Then you need to specify to *pydbr* which template you want to use for your quer
 
 ### Tested
 
-This project has been tested on Python 2.7+ and Python 3.3+
+This project has been tested on Python 2.6.7+, Python 2.7+ and Python 3.3+
