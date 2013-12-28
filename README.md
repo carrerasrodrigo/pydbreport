@@ -67,22 +67,22 @@ that you want to send. The format of the xml it's the following:
  - **weekday** will specify a list of days on witch the report it's gonna be executed. 
  You can use '*' to execute the report every day or '0,1' to send 
  the email on mondays and tuesdays.
-- **day** you need to write a number between 1-31 that will represent the day
+ - **day** you need to write a number between 1-31 that will represent the day
 of the month on witch the report will be excuted. If the tag **day** and **weekday** are
     added at the same time, **weekday** will be ignored. 
-- **queries** is a list of **query** that will be attached to the email. 
-- **query** is a query that will be attached to the email with the following tags
-    **db_name** represents the name of the database where we want to connect
-    **db_user** represents the name of the user that it's gonna be used to connect to the database.
-    **db_password** represents the password of the user that it's gonna be used to connect to the database.
-    **db_host** The host where the database is running. 
-    **transpose** Tells if the table generated after the query has to be transposed. O means False, 1 means True.
-    **variable** If a query is marked as a variable, it will save the result of the query in memory and use it when is necessary in the following queries. If the result of the query is a martix it will only use result[0][0].
-    **csv** Tells if the table should be attached to a csv file or rendered in the body of the email. O means False, 1 means True.
-    **csv_name** The name of the csv attached. If **cvs** is 0, it will be ignored. 
-    **code** The SQL that will be run into the database. It's recommended to write this code into
+ - **queries** is a list of **query** that will be attached to the email. 
+ - **query** is a query that will be attached to the email with the following tags
+    - **db_name** represents the name of the database where we want to connect
+    - **db_user** represents the name of the user that it's gonna be used to connect to the database.
+    - **db_password** represents the password of the user that it's gonna be used to connect to the database.
+    - **db_host** The host where the database is running. 
+    - **transpose** Tells if the table generated after the query has to be transposed. O means False, 1 means True.
+    - **variable** If a query is marked as a variable, it will save the result of the query in memory and use it when is necessary in the following queries. If the result of the query is a martix it will only use result[0][0].
+    - **csv** Tells if the table should be attached to a csv file or rendered in the body of the email. O means False, 1 means True.
+    - **csv_name** The name of the csv attached. If **cvs** is 0, it will be ignored. 
+    - **code** The SQL that will be run into the database. It's recommended to write this code into
         a CDATA tag.
-    **template_path** This tag represents the absolute path of the template we want to use to render our query. If we
+    - **template_path** This tag represents the absolute path of the template we want to use to render our query. If we
         miss this tag *PyDbReport* it's going to use a default template.
 
 
