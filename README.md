@@ -77,6 +77,7 @@ of the month on witch the report will be excuted. If the tag **day** and **weekd
     **db_password** represents the password of the user that it's gonna be used to connect to the database.
     **db_host** The host where the database is running. 
     **transpose** Tells if the table generated after the query has to be transposed. O means False, 1 means True.
+    **variable** If a query is marked as a variable, it will save the result of the query in memory and use it when is necessary in the following queries. If the result of the query is a martix it will only use result[0][0].
     **csv** Tells if the table should be attached to a csv file or rendered in the body of the email. O means False, 1 means True.
     **csv_name** The name of the csv attached. If **cvs** is 0, it will be ignored. 
     **code** The SQL that will be run into the database. It's recommended to write this code into
@@ -157,4 +158,4 @@ Then you need to specify to *pydbr* which template you want to use for your quer
 
 ### Tested
 
-This project has been tested on Python 2.6.7+, Python 2.7+ and Python 3.3+
+This project has been tested on Python 2.7+ and Python 3.3+
