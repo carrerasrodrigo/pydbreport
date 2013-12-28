@@ -7,6 +7,7 @@ try:
     from email.MIMEText import MIMEText
     from email.Utils import formatdate    
     from email import Encoders as encoders
+    py3 = False
 except ImportError:
     # Python 3
     from email.mime.multipart import MIMEMultipart
@@ -14,6 +15,7 @@ except ImportError:
     from email.mime.text import MIMEText
     from email.utils import formatdate
     from email import encoders
+    py3 = True
 
 def send_email(sfrom, to, subject, body, cc=[], bcc=[], files=[], host="localhost",
     port=25):
@@ -37,7 +39,10 @@ def send_email(sfrom, to, subject, body, cc=[], bcc=[], files=[], host="localhos
     msg['Date'] = formatdate(localtime=True)
     msg['Subject'] = subject
 
-    msg.attach(MIMEText(body.encode("utf-8"), "html"))
+    if py3:
+        msg.attach(MIMEText(body, "html"))
+    else:
+        msg.attach(MIMEText(body.encode("utf-8"), "html"))
     
     for f in files:
         part = MIMEBase('application', "octet-stream")
