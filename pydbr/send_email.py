@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #--------------------------------------
 import os, smtplib
 try:
@@ -36,7 +37,7 @@ def send_email(sfrom, to, subject, body, cc=[], bcc=[], files=[], host="localhos
     msg['Date'] = formatdate(localtime=True)
     msg['Subject'] = subject
 
-    msg.attach(MIMEText(body, "html"))
+    msg.attach(MIMEText(body.encode("utf-8"), "html"))
     
     for f in files:
         part = MIMEBase('application', "octet-stream")

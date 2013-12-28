@@ -12,3 +12,4 @@ INSERT INTO `pydbreport`.`famous_people` (`id`, `first_name`, `last_name`, `rati
 INSERT INTO `pydbreport`.`famous_people` (`id`,`first_name`, `last_name`, `rating`) VALUES (1, 'Master', 'Yoda', '20');
 INSERT INTO `pydbreport`.`famous_people` (`id`,`first_name`, `last_name`, `rating`) VALUES (2, 'Bruno', 'Diaz', '15');
 INSERT INTO `pydbreport`.`famous_people` (`id`,`first_name`, `last_name`, `rating`) VALUES (3, 'Clark', 'Kent', '1');
+INSERT INTO `pydbreport`.`famous_people` (`id`,`first_name`, `last_name`, `rating`) VALUES (4, 'wéirdnámé', 'ñaéd', '1');

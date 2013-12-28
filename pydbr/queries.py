@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #!/usr/bin/python
 import argparse
 import csv
@@ -36,7 +37,8 @@ def run_query(db_name, user, password, host, query):
     db = pymysql.connect(host=host, 
         user=user, 
         passwd=password, 
-        db=db_name)
+        db=db_name,
+        charset="utf8")
     cur = db.cursor()
     cur.execute(query)
     
@@ -63,7 +65,7 @@ def render_table(query, table):
     
     with open(template_path, "r") as f:
         template_content = f.read()
-
+    
     template = Template(template_content)
     return template.render(table=table)
 
@@ -78,7 +80,12 @@ def generate_csv(name, table):
         writer = csv.writer(csvfile, delimiter=',',
                             quotechar='|', quoting=csv.QUOTE_MINIMAL)
         for row in table:
-            writer.writerow(row)
+            #import pdb; pdb.set_trace()
+            #writer.writerow(row)
+            #for i in row:
+            #    print(type(i) == type(""), type(i))
+            writer.writerow(
+                [i for i in row if type(i) == type("")])
     return name
 
 def __day_is_ok(xml):
