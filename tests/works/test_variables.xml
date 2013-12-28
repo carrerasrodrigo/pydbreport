@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<job>
+    <emails>
+        <email>test@t.com</email>
+    </emails>
+    <subject>test report</subject>
+    <sender>sender@email.com</sender>
+    <day>*</day>
+    <queries>
+        <query>
+            <db_name>pydbreport</db_name>
+            <db_user>root</db_user>
+            <db_password>admin</db_password>
+            <db_host>localhost</db_host>
+            <transpose>0</transpose>
+            <variable>$1</variable>
+            <csv_name></csv_name>
+            <code>
+                select "hallo";
+            </code>
+        </query>
+        <query>
+            <db_name>pydbreport</db_name>
+            <db_user>root</db_user>
+            <db_password>admin</db_password>
+            <db_host>localhost</db_host>
+            <transpose>0</transpose>
+            <variable>$2</variable>
+            <csv_name></csv_name>
+            <code>
+                select first_name as v from famous_people order by id limit 1;
+            </code>
+        </query>
+        <query>
+            <db_name>pydbreport</db_name>
+            <db_user>root</db_user>
+            <db_password>admin</db_password>
+            <db_host>localhost</db_host>
+            <transpose>0</transpose>
+            <csv>0</csv>
+            <code>
+                select first_name, rating, "$1_test" as othername from famous_people
+                where first_name = "$2";
+            </code>
+        </query>
+    </queries>
+</job>
