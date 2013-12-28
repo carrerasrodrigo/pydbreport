@@ -21,7 +21,7 @@ class EmailServer(SMTPServer):
 
 class PyDbRTest(unittest.TestCase):
     test_path = os.path.dirname(__file__)
-    xml_test_cases = 2
+    xml_test_cases = 3
 
     #def setUp(self):
     #    # Compatibility with Python 2.6
@@ -91,7 +91,6 @@ class PyDbRTest(unittest.TestCase):
         message = self.server_em.messages.pop()
         self.assertTrue("From: sender@test.com" in message)
         self.assertTrue("To: test@t.com" in message)
-        #self.assertTrue("first_name" in message)
 
     def test_emails(self):
         p = os.path.join(self.test_path, "works", "test_no_csv.xml")
@@ -108,6 +107,14 @@ class PyDbRTest(unittest.TestCase):
         self.assertTrue("To: test@t.com" in message)
         self.assertTrue("Bcc: bcc@bcc.com" in message)
         self.assertTrue("Cc: cc@cc.com" in message)
+
+    def test_variables(self):
+        p = os.path.join(self.test_path, "works", "test_variables.xml")
+        arg = "--smtp-port=2525 --smtp-host=localhost --xml={0}".format(p)
+        main(*arg.split(" "))
+        message = self.server_em.messages.pop()
+        self.assertTrue("hallo_test" in message)
+        self.assertTrue("Luke" in message)
 
     def test_reportpath(self):
         p = os.path.join(self.test_path, "works")
