@@ -36,10 +36,10 @@ def run_query(db_name, user, password, host, query):
     db = pymysql.connect(host=host, 
         user=user, 
         passwd=password, 
-        db=db_name)
+        db=db_name,
+        charset='utf8')
     cur = db.cursor()
     cur.execute(query)
-    
     rows = [[i[0] for i in cur.description]]
     for row in cur:
         rows.append(row)
@@ -65,7 +65,10 @@ def render_table(query, table):
         template_content = f.read()
 
     template = Template(template_content)
-    return template.render(table=table)
+    try:
+        return template.render(table=table)
+    except:
+        import pdb; pdb.set_trace()
 
 def generate_csv(name, table):
     """Generates a csv file based on a matrix
@@ -110,25 +113,38 @@ def print_email_on_screen(body, csv_files):
     for cv in csv_files:
         print(cv)
 
+def __find_variables(queries):
+    data = [(q.find("variable").text, "") for q in queries if q.find("variable") is not None]
+    return dict(data)
+
+def __replace_query_variables(query, variables):
+    for k, v in variables.items():
+        query = query.replace(k, v)
+    return query
+
 def process_xml(conf, xml):
     el = []
     csvs = []
     if not __day_is_ok(xml):
         # Ignores the xml files that we dont have to run that day
         return 
-    
+    variables = __find_variables(xml.find("./queries").getchildren())
+
     for query in xml.find("./queries").getchildren():
+        sql = __replace_query_variables(query.find("code").text, variables)
         table = run_query(query.find("db_name").text,
             query.find("db_user").text,
             query.find("db_password").text,
             query.find("db_host").text,
-            query.find("code").text
+            sql
         )
         
         if query.find("transpose").text != "0":
             table = zip(*table)
 
-        if query.find("csv").text != "0":
+        if query.find("variable") is not None:
+            variables[query.find("variable").text] = str(table[1][0])
+        elif query.find("csv").text != "0":
             cs_name = os.path.join(conf.tmp_folder, query.find("csv_name").text)
             cs = generate_csv(cs_name, table)
             csvs.append(cs)
