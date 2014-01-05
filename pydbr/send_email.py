@@ -18,7 +18,7 @@ except ImportError:
     py3 = True
 
 def send_email(sfrom, to, subject, body, cc=[], bcc=[], files=[], host="localhost",
-    port=25):
+    port=25, user=None, password=None):
     """Send an email
 
     :param sfrom: The email of the sender
@@ -29,7 +29,10 @@ def send_email(sfrom, to, subject, body, cc=[], bcc=[], files=[], host="localhos
         to the email.
     :param host: The host that we want to connect to send the emails
     :param port: The port of the host that we want to connect
-    :returns: A list of ElementTree
+    :param user: The user that we want to use in case that authentication 
+        it's needed
+    :param password: The password that we want to use in case that 
+        authentication it's needed
     """
     msg = MIMEMultipart()
     msg['From'] = sfrom
@@ -54,6 +57,8 @@ def send_email(sfrom, to, subject, body, cc=[], bcc=[], files=[], host="localhos
     
     try:
         smtp = smtplib.SMTP(host, port)
+        if user is not None:
+            smtp.login(user, password)
         smtp.sendmail(sfrom, to + cc + bcc, msg.as_string())
         smtp.close()
     except:

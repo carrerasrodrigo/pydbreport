@@ -177,7 +177,8 @@ def process_xml(conf, xml):
             send_email(xml.find("sender").text, emails, 
                 xml.find("subject").text,
                 "".join(el), cc=cc, bcc=bcc, files=csvs, 
-                host=conf.smtp_host, port=conf.smtp_port)
+                host=conf.smtp_host, port=conf.smtp_port,
+                user=conf.smtp_user, password=conf.smtp_password)
     else:
         print_email_on_screen("".join(el), csvs)
 
@@ -189,6 +190,8 @@ parser.add_argument("--xml", help="The path of the xml that you want to use. If 
 parser.add_argument("--reportpath", help="The path where we want to scan all our reports. It's ignored if the --xml argument it's present. ", default=None)
 parser.add_argument("--smtp-host", help="The SMTP host", default="localhost", dest="smtp_host")
 parser.add_argument("--smtp-port", help="The SMTP host port", default="25", dest="smtp_port")
+parser.add_argument("--smtp-user", help="The SMTP user. If Login it's required", default=None, dest="smtp_user")
+parser.add_argument("--smtp-password", help="The SMTP password. If Login it's required", default=None, dest="smtp_password")
 parser.add_argument("--csv-tmp-folder", help="The folder where the csv files will be saved temporarily", default="/tmp", dest="tmp_folder")
 
 def main(*args):
