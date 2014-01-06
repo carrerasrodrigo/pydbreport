@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 import os
 import sys
+py3 = sys.version_info[0] == 3
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "pydbr"))
 
 import asyncore
+import base64
+import email
 import threading
 import unittest
-import logging
 
 from pydbr.queries import main, scan_queries, run_query, render_table
 from smtpd import SMTPServer
@@ -18,6 +20,11 @@ class EmailServer(SMTPServer):
     
     def process_message(self, peer, mailfrom, rcpttos, data):
         self.messages.append(data)
+
+    @classmethod
+    def dec(cls, message):
+        b64 = email.message_from_string(message).get_payload()[0].get_payload()
+        return base64.b64decode(b64)
 
 class PyDbRTest(unittest.TestCase):
     test_path = os.path.dirname(__file__)
@@ -113,8 +120,10 @@ class PyDbRTest(unittest.TestCase):
         arg = "--smtp-port=2525 --smtp-host=localhost --xml={0}".format(p)
         main(*arg.split(" "))
         message = self.server_em.messages.pop()
-        self.assertTrue("hallo_test" in message)
-        self.assertTrue("Luke" in message)
+        if not py3:
+            message = self.server_em.dec(message)
+        self.assertTrue("hallo_test" in str(message))
+        self.assertTrue("Luke" in str(message))
 
     def test_reportpath(self):
         p = os.path.join(self.test_path, "works")

@@ -45,7 +45,7 @@ def send_email(sfrom, to, subject, body, cc=[], bcc=[], files=[], host="localhos
     if py3:
         msg.attach(MIMEText(body, "html"))
     else:
-        msg.attach(MIMEText(body.encode("utf-8"), "html"))
+        msg.attach(MIMEText(body, "html", "utf-8"))
     
     for f in files:
         part = MIMEBase('application', "octet-stream")
@@ -54,12 +54,16 @@ def send_email(sfrom, to, subject, body, cc=[], bcc=[], files=[], host="localhos
         encoders.encode_base64(part)
         part.add_header('Content-Disposition', 'attachment; filename="%s"' % os.path.basename(f))
         msg.attach(part)
-    
+
     try:
         smtp = smtplib.SMTP(host, port)
         if user is not None:
             smtp.login(user, password)
-        smtp.sendmail(sfrom, to + cc + bcc, msg.as_string())
+        try:
+            smtp.sendmail(sfrom, to + cc + bcc, msg.as_string())
+        except:
+            import pdb; pdb.set_trace()
         smtp.close()
     except:
+        raise
         print("Error sending the email")

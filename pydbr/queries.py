@@ -9,6 +9,7 @@ import sys
 from jinja2 import Template
 from send_email import send_email
 from xml.etree import ElementTree as ET # or Alien??
+py3 = sys.version_info[0] == 3
 
 def scan_queries(path):
     """Scans all xml files based on the extension
@@ -66,10 +67,7 @@ def render_table(query, table):
         template_content = f.read()
     
     template = Template(template_content)
-    try:
-        return template.render(table=table)
-    except:
-        import pdb; pdb.set_trace()
+    return template.render(table=table)
 
 def generate_csv(name, table):
     """Generates a csv file based on a matrix
@@ -82,12 +80,11 @@ def generate_csv(name, table):
         writer = csv.writer(csvfile, delimiter=',',
                             quotechar='|', quoting=csv.QUOTE_MINIMAL)
         for row in table:
-            #import pdb; pdb.set_trace()
-            #writer.writerow(row)
-            #for i in row:
-            #    print(type(i) == type(""), type(i))
-            writer.writerow(
-                [i for i in row if type(i) == type("")])
+            if py3:
+                writer.writerow(row)
+            else:
+                writer.writerow(
+                    [unicode(i).encode("utf-8") for i in row])
     return name
 
 def __day_is_ok(xml):

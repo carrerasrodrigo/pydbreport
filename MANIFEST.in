@@ -1,5 +1,7 @@
 include README.rst *.py *.jinja
 recursive-include docs *
 recursive-include templates *.jinja
+recursive-include pydbr templates *.jinja
+recursive-include templates *.jinja
 recursive-exclude docs *.pyc
 recursive-exclude docs *.pyo
