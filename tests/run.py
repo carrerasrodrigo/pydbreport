@@ -7,6 +7,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "pydbr"))
 
 import asyncore
 import base64
+import datetime
 import email
 import threading
 import unittest
@@ -17,7 +18,7 @@ from smtpd import SMTPServer
 
 class EmailServer(SMTPServer):
     messages = []
-    
+
     def process_message(self, peer, mailfrom, rcpttos, data):
         self.messages.append(data)
 
@@ -28,36 +29,34 @@ class EmailServer(SMTPServer):
 
 class PyDbRTest(unittest.TestCase):
     test_path = os.path.dirname(__file__)
-    xml_test_cases = 3
+    xml_test_cases = 4
 
-    #def setUp(self):
-    #    # Compatibility with Python 2.6
-    #    if getattr(self, "server_em", None) is None:
-    #        self.setUpClass()
+    def setUp(self):
+        self.server_em.messages = []
 
     @classmethod
     def setUpClass(cls):
-        print("START")
         def start_server():
             cls.server_em = EmailServer(('localhost', 2525), None)
             asyncore.loop()
+        print("Starting SMTP Server")
         cls.smtp_server = threading.Thread(target=start_server)
         cls.smtp_server.daemon = True
         cls.smtp_server.start()
 
     #@classmethod
     #def tearDownClass(cls):
-    #    print("STOP")
+    #    print("Stoping SMTP Server")
     #    cls.server_em.stop()
 
     def test_no_args(self):
         self.assertRaises(Exception, main)
-    
+
     #def test_print_screen(self):
     #    wp = os.path.join(self.test_path, "works", "test.xml")
     #    ar = ["--output=screen", "--xml={0}".format(wp)]
     #    self.assertTrue(main(*ar))
-    
+
     def test_scan_queries(self):
         xmls = scan_queries(os.path.join(self.test_path, "works"))
         self.assertEqual(len(xmls), self.xml_test_cases)
@@ -68,23 +67,14 @@ class PyDbRTest(unittest.TestCase):
         self.assertEqual(len(xmls), 0)
 
     def test_run_query(self):
-        query = run_query("pydbreport", "root", "admin", "localhost", 
+        query = run_query("pydbreport", "pydbreport", "", "localhost",
             "select first_name, rating from famous_people limit 2;")
         self.assertEqual(len(query), 3)
         self.assertEqual(query[0][0], "first_name")
-        
-    def test_render_table(self):
-        xmls = scan_queries(os.path.join(self.test_path, "works"))
-        query = run_query("pydbreport", "root", "admin", "localhost", 
-            "select first_name, rating from famous_people limit 2;")
-        r = render_table(xmls[0].find("queries").find("query"), query)
-        self.assertTrue("first_name" in r)
-        self.assertTrue("rating" in r)
-        self.assertTrue("<table" in r)
 
     def test_render_table(self):
         xmls = scan_queries(os.path.join(self.test_path, "works"))
-        query = run_query("pydbreport", "root", "admin", "localhost", 
+        query = run_query("pydbreport", "pydbreport", "", "localhost",
             "select first_name, rating from famous_people limit 2;")
         r = render_table(xmls[0].find("queries").find("query"), query)
         self.assertTrue("first_name" in r)
@@ -129,7 +119,56 @@ class PyDbRTest(unittest.TestCase):
         p = os.path.join(self.test_path, "works")
         arg = "--smtp-port=2525 --smtp-host=localhost --reportpath={0}".format(p)
         main(*arg.split(" "))
-        self.assertEqual(len(self.server_em.messages), self.xml_test_cases)
+        self.assertEqual(len(self.server_em.messages), self.xml_test_cases - 1)
+
+    def test_day_hour(self):
+        p = os.path.join(self.test_path, "works", "test_time_to_send.xml")
+        p2 = os.path.join(self.test_path, "works", "test_time_to_send.repxml")
+        with open(p) as xml: t = xml.read()
+        t = t.replace("REPLACE_DAY", str(datetime.datetime.now().day))
+        t = t.replace("REPLACE_HOUR", str(datetime.datetime.now().hour))
+        with open(p2, "w") as xml: xml.write(t)
+
+        arg = "--smtp-port=2525 --smtp-host=localhost --xml={0} --emails=noemail@email.com".format(p2)
+        main(*arg.split(" "))
+        self.assertEqual(1, len(self.server_em.messages))
+
+    def test_day_hour_wrong(self):
+        p = os.path.join(self.test_path, "works", "test_time_to_send.xml")
+        p2 = os.path.join(self.test_path, "works", "test_time_to_send.repxml")
+        with open(p) as xml: t = xml.read()
+        t = t.replace("REPLACE_DAY", str(datetime.datetime.now().day))
+        t = t.replace("REPLACE_HOUR", str(datetime.datetime.now().hour + 1))
+        with open(p2, "w") as xml: xml.write(t)
+
+        arg = "--smtp-port=2525 --smtp-host=localhost --xml={0} --emails=noemail@email.com".format(p2)
+        main(*arg.split(" "))
+        self.assertEqual(0, len(self.server_em.messages))
+
+    def test_day_wrong_hour(self):
+        p = os.path.join(self.test_path, "works", "test_time_to_send.xml")
+        p2 = os.path.join(self.test_path, "works", "test_time_to_send.repxml")
+        with open(p) as xml: t = xml.read()
+        t = t.replace("REPLACE_DAY", str(datetime.datetime.now().day + 1))
+        t = t.replace("REPLACE_HOUR", str(datetime.datetime.now().hour))
+        with open(p2, "w") as xml: xml.write(t)
+
+        arg = "--smtp-port=2525 --smtp-host=localhost --xml={0} --emails=noemail@email.com".format(p2)
+        main(*arg.split(" "))
+        self.assertEqual(0, len(self.server_em.messages))
+
+    def test_day_hour_wildcard(self):
+        p = os.path.join(self.test_path, "works", "test_time_to_send.xml")
+        p2 = os.path.join(self.test_path, "works", "test_time_to_send.repxml")
+        with open(p) as xml: t = xml.read()
+        t = t.replace("REPLACE_DAY", "*")
+        t = t.replace("REPLACE_HOUR", "*")
+        with open(p2, "w") as xml: xml.write(t)
+
+        arg = "--smtp-port=2525 --smtp-host=localhost --xml={0} --emails=noemail@email.com".format(p2)
+        main(*arg.split(" "))
+        self.assertEqual(1, len(self.server_em.messages))
+
 
 if __name__ == '__main__':
     unittest.main()

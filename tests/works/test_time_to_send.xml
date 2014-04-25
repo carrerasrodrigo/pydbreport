@@ -5,7 +5,8 @@
     </emails>
     <subject>test report</subject>
     <sender>sender@email.com</sender>
-    <day>*</day>
+    <day>REPLACE_DAY</day>
+    <hours>REPLACE_HOUR</hours>
     <queries>
         <query>
             <db_name>pydbreport</db_name>
@@ -13,10 +14,10 @@
             <db_password></db_password>
             <db_host>localhost</db_host>
             <transpose>0</transpose>
-            <csv>1</csv>
-            <csv_name>test.csv</csv_name>
+            <variable>$1</variable>
+            <csv_name></csv_name>
             <code>
-                select first_name, rating from famous_people;
+                select "hallo";
             </code>
         </query>
     </queries>

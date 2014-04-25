@@ -11,8 +11,8 @@
     <queries>
         <query>
             <db_name>pydbreport</db_name>
-            <db_user>root</db_user>
-            <db_password>admin</db_password>
+            <db_user>pydbreport</db_user>
+            <db_password></db_password>
             <db_host>localhost</db_host>
             <transpose>0</transpose>
             <csv>0</csv>

@@ -2,10 +2,10 @@
 #!/usr/bin/python
 import argparse
 import csv
-import datetime 
-import os 
+import datetime
+import os
 import pymysql
-import sys 
+import sys
 from jinja2 import Template
 from send_email import send_email
 from xml.etree import ElementTree as ET # or Alien??
@@ -35,9 +35,10 @@ def run_query(db_name, user, password, host, query):
     :param query: The query that you want to run
     :returns: A matrix of queries
     """
-    db = pymysql.connect(host=host, 
-        user=user, 
-        passwd=password, 
+    password = "" if password is None else password
+    db = pymysql.connect(host=host,
+        user=user,
+        passwd=password,
         db=db_name,
         charset="utf8")
     cur = db.cursor()
@@ -46,7 +47,7 @@ def run_query(db_name, user, password, host, query):
     for row in cur:
         rows.append(row)
     cur.close()
-    db.close()    
+    db.close()
 
     return rows
 
@@ -58,14 +59,14 @@ def render_table(query, table):
     :returns: An string representing an html table
     """
     if query.find("template_path") is None:
-        template_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 
+        template_path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
             "templates", "base.jinja")
     else:
         template_path = query.find("template_path").text
-    
+
     with open(template_path, "r") as f:
         template_content = f.read()
-    
+
     template = Template(template_content)
     return template.render(table=table)
 
@@ -87,20 +88,28 @@ def generate_csv(name, table):
                     [unicode(i).encode("utf-8") for i in row])
     return name
 
+def __hour_is_ok(xml):
+    hour = datetime.datetime.now().hour
+    hours = xml.find("hours")
+    if hours is not None:
+        l = hours.text.replace(" ", "").split(",")
+        return str(hour) in l or "*" in l
+    return True
+
 def __day_is_ok(xml):
     # Tener en cuenta que el tag <day> tiene mayor prioridad que <weekday>
     day = datetime.datetime.now().day
     weekday = datetime.datetime.now().weekday()
     days = xml.find("day")
     weekdays = xml.find("weekday")
-    
+
     if days is not None:
         l = days.text.replace(" ", "").split(",")
-        return str(day) in l or "*" in l
+        return (str(day) in l or "*" in l) and __hour_is_ok(xml)
 
     if weekdays is not None:
         l = weekdays.text.replace(" ", "").split(",")
-        return str(weekday) in l or "*" in l
+        return (str(weekday) in l or "*" in l) and __hour_is_ok(xml)
 
     return False
 
@@ -130,7 +139,7 @@ def process_xml(conf, xml):
     csvs = []
     if not __day_is_ok(xml):
         # Ignores the xml files that we dont have to run that day
-        return 
+        return
     variables = __find_variables(xml.find("./queries").getchildren())
 
     for query in xml.find("./queries").getchildren():
@@ -141,7 +150,7 @@ def process_xml(conf, xml):
             query.find("db_host").text,
             sql
         )
-        
+
         if query.find("transpose").text != "0":
             table = zip(*table)
 
@@ -153,7 +162,7 @@ def process_xml(conf, xml):
             csvs.append(cs)
         else:
             el.extend(render_table(query, table))
-        
+
     emails = []
     if conf.output == "email":
         cc = []
@@ -171,9 +180,9 @@ def process_xml(conf, xml):
                 bcc.append(em.text)
 
         if len(emails) > 0:
-            send_email(xml.find("sender").text, emails, 
+            send_email(xml.find("sender").text, emails,
                 xml.find("subject").text,
-                "".join(el), cc=cc, bcc=bcc, files=csvs, 
+                "".join(el), cc=cc, bcc=bcc, files=csvs,
                 host=conf.smtp_host, port=conf.smtp_port,
                 user=conf.smtp_user, password=conf.smtp_password)
     else:
@@ -196,16 +205,16 @@ def main(*args):
 
     if conf.xml is None and conf.reportpath is None:
         raise Exception("Please use --xml or --reportpath")
-    
+
     if conf.xml is None:
         xmls = scan_queries(conf.reportpath)
     else:
         with open(conf.xml, "r") as f:
             xmls = [ET.XML(f.read())]
-    
+
     for xml in xmls:
         process_xml(conf, xml)
-    
+
     return True
 
 if __name__ == '__main__':
