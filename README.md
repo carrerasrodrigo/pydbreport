@@ -43,7 +43,7 @@ that you want to send. The format of the xml it's the following:
     <subject>test report</subject>
     <sender>sender@email.com</sender>
     <day>*</day>
-    <send_empty_email>*</send_empty_email>
+    <send_empty_email>1</send_empty_email>
     <queries>
         <query>
             <db_name>pydbreport</db_name>
