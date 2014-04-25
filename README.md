@@ -43,6 +43,7 @@ that you want to send. The format of the xml it's the following:
     <subject>test report</subject>
     <sender>sender@email.com</sender>
     <day>*</day>
+    <send_empty_email>*</send_empty_email>
     <queries>
         <query>
             <db_name>pydbreport</db_name>
@@ -72,6 +73,7 @@ of the month on witch the report will be excuted. If the tag **day** and **weekd
     added at the same time, **weekday** will be ignored.
  - **hours** is a string that specify at which hour the query has to run. You can use '*' to execute the report every hour or '0,13' to send the email at 12 AM and 1PM. If the tag is ignored '*' will be used.
  the email on mondays and tuesdays.
+ - **send_empty_email** If is '0' don't send the email in case that the query is empty. If the tag is ignored the default value is '1'.
  - **queries** is a list of **query** that will be attached to the email.
  - **query** is a query that will be attached to the email with the following tags
     - **db_name** represents the name of the database where we want to connect

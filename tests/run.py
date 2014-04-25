@@ -29,7 +29,6 @@ class EmailServer(SMTPServer):
 
 class PyDbRTest(unittest.TestCase):
     test_path = os.path.dirname(__file__)
-    xml_test_cases = 4
 
     def setUp(self):
         self.server_em.messages = []
@@ -48,6 +47,15 @@ class PyDbRTest(unittest.TestCase):
     #def tearDownClass(cls):
     #    print("Stoping SMTP Server")
     #    cls.server_em.stop()
+
+    @property
+    def xml_test_cases(self):
+        total = 0
+        path = os.path.join(self.test_path, "works")
+        for root, dirs, files in os.walk(path):
+            for f in filter(lambda x: x.endswith(".xml"), files):
+                total += 1
+        return total
 
     def test_no_args(self):
         self.assertRaises(Exception, main)
@@ -119,7 +127,7 @@ class PyDbRTest(unittest.TestCase):
         p = os.path.join(self.test_path, "works")
         arg = "--smtp-port=2525 --smtp-host=localhost --reportpath={0}".format(p)
         main(*arg.split(" "))
-        self.assertEqual(len(self.server_em.messages), self.xml_test_cases - 1)
+        self.assertEqual(len(self.server_em.messages), self.xml_test_cases - 2)
 
     def test_day_hour(self):
         p = os.path.join(self.test_path, "works", "test_time_to_send.xml")
@@ -166,6 +174,18 @@ class PyDbRTest(unittest.TestCase):
         with open(p2, "w") as xml: xml.write(t)
 
         arg = "--smtp-port=2525 --smtp-host=localhost --xml={0} --emails=noemail@email.com".format(p2)
+        main(*arg.split(" "))
+        self.assertEqual(1, len(self.server_em.messages))
+
+    def test_empty_email_no(self):
+        p = os.path.join(self.test_path, "works", "test_empty_email_no.xml")
+        arg = "--smtp-port=2525 --smtp-host=localhost --xml={0} --emails=noemail@email.com".format(p)
+        main(*arg.split(" "))
+        self.assertEqual(0, len(self.server_em.messages))
+
+    def test_empty_email_yes(self):
+        p = os.path.join(self.test_path, "works", "test_empty_email_yes.xml")
+        arg = "--smtp-port=2525 --smtp-host=localhost --xml={0} --emails=noemail@email.com".format(p)
         main(*arg.split(" "))
         self.assertEqual(1, len(self.server_em.messages))
 

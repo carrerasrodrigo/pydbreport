@@ -141,7 +141,7 @@ def process_xml(conf, xml):
         # Ignores the xml files that we dont have to run that day
         return
     variables = __find_variables(xml.find("./queries").getchildren())
-
+    send_empty_email = xml.find("send_empty_email")
     for query in xml.find("./queries").getchildren():
         sql = __replace_query_variables(query.find("code").text, variables)
         table = run_query(query.find("db_name").text,
@@ -150,6 +150,10 @@ def process_xml(conf, xml):
             query.find("db_host").text,
             sql
         )
+
+        if len(table) == 1 and send_empty_email is not None \
+            and send_empty_email.text == "0":
+            continue
 
         if query.find("transpose").text != "0":
             table = zip(*table)
@@ -179,7 +183,7 @@ def process_xml(conf, xml):
             for em in xml.findall("*/bcc"):
                 bcc.append(em.text)
 
-        if len(emails) > 0:
+        if len(emails) > 0 and (len(el) > 0 or len(csvs) > 0):
             send_email(xml.find("sender").text, emails,
                 xml.find("subject").text,
                 "".join(el), cc=cc, bcc=bcc, files=csvs,
