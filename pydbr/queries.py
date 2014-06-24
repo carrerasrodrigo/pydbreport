@@ -3,6 +3,7 @@
 import argparse
 import csv
 import datetime
+import logging
 import os
 import pymysql
 import sys
@@ -10,6 +11,8 @@ from jinja2 import Template
 from send_email import send_email
 from xml.etree import ElementTree as ET # or Alien??
 py3 = sys.version_info[0] == 3
+
+logger = logging.getLogger('pydbr')
 
 def scan_queries(path):
     """Scans all xml files based on the extension
@@ -134,6 +137,7 @@ def __replace_query_variables(query, variables):
         query = query.replace(k, v)
     return query
 
+
 def process_xml(conf, xml):
     el = []
     csvs = []
@@ -144,12 +148,17 @@ def process_xml(conf, xml):
     send_empty_email = xml.find("send_empty_email")
     for query in xml.find("./queries").getchildren():
         sql = __replace_query_variables(query.find("code").text, variables)
-        table = run_query(query.find("db_name").text,
-            query.find("db_user").text,
-            query.find("db_password").text,
-            query.find("db_host").text,
-            sql
-        )
+
+        try:
+            table = run_query(query.find("db_name").text,
+                query.find("db_user").text,
+                query.find("db_password").text,
+                query.find("db_host").text,
+                sql
+            )
+        except:
+            logger.error('Error running query: %s', sql)
+            raise
 
         if len(table) == 1 and send_empty_email is not None \
             and send_empty_email.text == "0":
@@ -192,6 +201,13 @@ def process_xml(conf, xml):
     else:
         print_email_on_screen("".join(el), csvs)
 
+def configure_logging(log_folder):
+    p = os.path.join(log_folder, 'pydbr.log')
+    fh = logging.FileHandler(p)
+    formatter = logging.Formatter('%(asctime)s - %(name)s - '
+        '%(levelname)s - %(message)s')
+    fh.setFormatter(formatter)
+    logger.addHandler(fh)
 
 parser = argparse.ArgumentParser(description="PyDbReport", add_help=True)
 parser.add_argument("--output", help="email or screen. If it's email it will send the report by email otherwise will print it on the screen", default="email")
@@ -203,12 +219,16 @@ parser.add_argument("--smtp-port", help="The SMTP host port", default="25", dest
 parser.add_argument("--smtp-user", help="The SMTP user. If Login it's required", default=None, dest="smtp_user")
 parser.add_argument("--smtp-password", help="The SMTP password. If Login it's required", default=None, dest="smtp_password")
 parser.add_argument("--csv-tmp-folder", help="The folder where the csv files will be saved temporarily", default="/tmp", dest="tmp_folder")
+parser.add_argument("--log-folder", help="The folder where the query errors will be logged", default=None, dest="log_folder")
 
 def main(*args):
     conf = parser.parse_args(args) if len(args) > 0 else parser.parse_args()
 
     if conf.xml is None and conf.reportpath is None:
         raise Exception("Please use --xml or --reportpath")
+
+    if conf.log_folder is not None:
+        configure_logging(conf.log_folder)
 
     if conf.xml is None:
         xmls = scan_queries(conf.reportpath)

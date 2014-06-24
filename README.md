@@ -109,6 +109,7 @@ here you have some examples:
 - **smtp-host**: The SMTP host
 - **smtp-port**: The SMTP host port
 - **csv-tmp-folder**: The folder where the csv files will be saved temporarily
+- **log-folder**: The path of the folder where pydbr will keep the error log.
 
 
 ### How to run the reports every day?

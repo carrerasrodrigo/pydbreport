@@ -9,9 +9,10 @@ import asyncore
 import base64
 import datetime
 import email
+import time
 import threading
 import unittest
-
+import pymysql
 from pydbr.queries import main, scan_queries, run_query, render_table
 from smtpd import SMTPServer
 
@@ -42,11 +43,13 @@ class PyDbRTest(unittest.TestCase):
         cls.smtp_server = threading.Thread(target=start_server)
         cls.smtp_server.daemon = True
         cls.smtp_server.start()
+        time.sleep(0.1)
 
-    #@classmethod
-    #def tearDownClass(cls):
-    #    print("Stoping SMTP Server")
-    #    cls.server_em.stop()
+    @classmethod
+    def tearDownClass(cls):
+        elog = os.path.join(cls.test_path, 'works_error', 'pydbr.log')
+        if os.path.isfile(elog):
+            os.remove(elog)
 
     @property
     def xml_test_cases(self):
@@ -59,11 +62,6 @@ class PyDbRTest(unittest.TestCase):
 
     def test_no_args(self):
         self.assertRaises(Exception, main)
-
-    #def test_print_screen(self):
-    #    wp = os.path.join(self.test_path, "works", "test.xml")
-    #    ar = ["--output=screen", "--xml={0}".format(wp)]
-    #    self.assertTrue(main(*ar))
 
     def test_scan_queries(self):
         xmls = scan_queries(os.path.join(self.test_path, "works"))
@@ -188,6 +186,15 @@ class PyDbRTest(unittest.TestCase):
         arg = "--smtp-port=2525 --smtp-host=localhost --xml={0} --emails=noemail@email.com".format(p)
         main(*arg.split(" "))
         self.assertEqual(1, len(self.server_em.messages))
+
+    def test_error_log(self):
+        p = os.path.join(self.test_path, "works_error", "test_error.xml")
+        elog = os.path.join(self.test_path, "works_error")
+        arg = "--smtp-port=2525 --smtp-host=localhost --xml={0} --emails=noemail@email.com --log-folder={1}".format(p, elog)
+        f = lambda: main(*arg.split(" "))
+        self.assertRaises(pymysql.err.ProgrammingError, f)
+        with open(os.path.join(elog, 'pydbr.log')) as ff:
+            self.assertTrue('error query' in ff.read())
 
 
 if __name__ == '__main__':

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<job>
+    <emails>
+        <email>test@t.com</email>
+    </emails>
+    <subject>test report</subject>
+    <sender>sender@email.com</sender>
+    <day>*</day>
+    <queries>
+        <query>
+            <db_name>pydbreport</db_name>
+            <db_user>pydbreport</db_user>
+            <db_password></db_password>
+            <db_host>localhost</db_host>
+            <transpose>0</transpose>
+            <csv>1</csv>
+            <csv_name>test.csv</csv_name>
+            <code>
+                error query
+            </code>
+        </query>
+    </queries>
+</job>
