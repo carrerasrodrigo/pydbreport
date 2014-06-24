@@ -5,7 +5,7 @@ try:
     from email.MIMEMultipart import MIMEMultipart
     from email.MIMEBase import MIMEBase
     from email.MIMEText import MIMEText
-    from email.Utils import formatdate    
+    from email.Utils import formatdate
     from email import Encoders as encoders
     py3 = False
 except ImportError:
@@ -29,9 +29,9 @@ def send_email(sfrom, to, subject, body, cc=[], bcc=[], files=[], host="localhos
         to the email.
     :param host: The host that we want to connect to send the emails
     :param port: The port of the host that we want to connect
-    :param user: The user that we want to use in case that authentication 
+    :param user: The user that we want to use in case that authentication
         it's needed
-    :param password: The password that we want to use in case that 
+    :param password: The password that we want to use in case that
         authentication it's needed
     """
     msg = MIMEMultipart()
@@ -46,7 +46,7 @@ def send_email(sfrom, to, subject, body, cc=[], bcc=[], files=[], host="localhos
         msg.attach(MIMEText(body, "html"))
     else:
         msg.attach(MIMEText(body, "html", "utf-8"))
-    
+
     for f in files:
         part = MIMEBase('application', "octet-stream")
         with open(f, "rb") as fr:
@@ -59,11 +59,7 @@ def send_email(sfrom, to, subject, body, cc=[], bcc=[], files=[], host="localhos
         smtp = smtplib.SMTP(host, port)
         if user is not None:
             smtp.login(user, password)
-        try:
-            smtp.sendmail(sfrom, to + cc + bcc, msg.as_string())
-        except:
-            import pdb; pdb.set_trace()
+        smtp.sendmail(sfrom, to + cc + bcc, msg.as_string())
         smtp.close()
     except:
         raise
-        print("Error sending the email")
