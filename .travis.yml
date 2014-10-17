@@ -1,9 +1,18 @@
 language: python
 python:
   - "2.7"
-  - "3.2"
   - "3.3"
   - "3.4"
+before_script:
+  - mysql -e 'CREATE SCHEMA IF NOT EXISTS `pydbreport` DEFAULT CHARACTER SET utf8 COLLATE utf8_bin ;'
+  - mysql -e 'CREATE  TABLE  IF NOT EXISTS `pydbreport`.`famous_people` (`id` INT NOT NULL ,`first_name` VARCHAR(150) NULL ,`last_name` VARCHAR(155) NULL ,`rating` INT NULL ,PRIMARY KEY (`id`) );'
+  - mysql -e 'INSERT INTO `pydbreport`.`famous_people` (`id`, `first_name`, `last_name`, `rating`) VALUES (0, "Luke", "Skywalker", "10");'
+  - mysql -e 'INSERT INTO `pydbreport`.`famous_people` (`id`,`first_name`, `last_name`, `rating`) VALUES (1, "Master", "Yoda", "20");'
+  - mysql -e 'INSERT INTO `pydbreport`.`famous_people` (`id`,`first_name`, `last_name`, `rating`) VALUES (2, "Bruno", "Diaz", "15");'
+  - mysql -e 'INSERT INTO `pydbreport`.`famous_people` (`id`,`first_name`, `last_name`, `rating`) VALUES (3, "Clark", "Kent", "1");'
+  - mysql -e 'INSERT INTO `pydbreport`.`famous_people` (`id`,`first_name`, `last_name`, `rating`) VALUES (4, "wéirdnámé", "ñaéd", "1");'
+  - mysql -e 'CREATE USER `pydbreport`@`localhost`;'
+  - mysql -e 'GRANT ALL ON pydbreport.* TO `pydbreport`@`localhost`;' -uroot
 # command to install dependencies
 install:
   - "pip install ."
