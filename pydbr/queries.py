@@ -9,10 +9,11 @@ import pymysql
 import sys
 from jinja2 import Template
 from send_email import send_email
-from xml.etree import ElementTree as ET # or Alien??
+from xml.etree import ElementTree as ET
 py3 = sys.version_info[0] == 3
 
 logger = logging.getLogger('pydbr')
+
 
 def scan_queries(path):
     """Scans all xml files based on the extension
@@ -27,6 +28,7 @@ def scan_queries(path):
             with open(p, "r") as f:
                 ret.append(ET.XML(f.read()))
     return ret
+
 
 def run_query(db_name, user, password, host, query):
     """Run a SQL query in MySql
@@ -54,6 +56,7 @@ def run_query(db_name, user, password, host, query):
 
     return rows
 
+
 def render_table(query, table):
     """Renders a matrix into a html table
 
@@ -73,6 +76,7 @@ def render_table(query, table):
     template = Template(template_content)
     return template.render(table=table)
 
+
 def generate_csv(name, table):
     """Generates a csv file based on a matrix
 
@@ -91,6 +95,13 @@ def generate_csv(name, table):
                     [unicode(i).encode("utf-8") for i in row])
     return name
 
+
+def parse_var(val):
+    if val is not None and val.startswith('$ENV:'):
+        return os.environ.get(val.replace('$ENV', ''))
+    return val
+
+
 def __hour_is_ok(xml):
     hour = datetime.datetime.now().hour
     hours = xml.find("hours")
@@ -98,6 +109,7 @@ def __hour_is_ok(xml):
         l = hours.text.replace(" ", "").split(",")
         return str(hour) in l or "*" in l
     return True
+
 
 def __day_is_ok(xml):
     # Tener en cuenta que el tag <day> tiene mayor prioridad que <weekday>
@@ -116,6 +128,7 @@ def __day_is_ok(xml):
 
     return False
 
+
 def print_email_on_screen(body, csv_files):
     """Prints information in the standar output
 
@@ -128,9 +141,11 @@ def print_email_on_screen(body, csv_files):
     for cv in csv_files:
         print(cv)
 
+
 def __find_variables(queries):
     data = [(q.find("variable").text, "") for q in queries if q.find("variable") is not None]
     return dict(data)
+
 
 def __replace_query_variables(query, variables):
     for k, v in variables.items():
@@ -150,10 +165,10 @@ def process_xml(conf, xml):
         sql = __replace_query_variables(query.find("code").text, variables)
 
         try:
-            table = run_query(query.find("db_name").text,
-                query.find("db_user").text,
-                query.find("db_password").text,
-                query.find("db_host").text,
+            table = run_query(parse_var(query.find("db_name").text),
+                parse_var(query.find("db_user").text),
+                parse_var(query.find("db_password").text),
+                parse_var(query.find("db_host").text),
                 sql
             )
         except:
@@ -200,6 +215,7 @@ def process_xml(conf, xml):
                 user=conf.smtp_user, password=conf.smtp_password)
     else:
         print_email_on_screen("".join(el), csvs)
+
 
 def configure_logging(log_folder):
     p = os.path.join(log_folder, 'pydbr.log')

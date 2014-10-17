@@ -76,10 +76,10 @@ of the month on witch the report will be excuted. If the tag **day** and **weekd
  - **send_empty_email** If is '0' don't send the email in case that the query is empty. If the tag is ignored the default value is '1'.
  - **queries** is a list of **query** that will be attached to the email.
  - **query** is a query that will be attached to the email with the following tags
-    - **db_name** represents the name of the database where we want to connect
-    - **db_user** represents the name of the user that it's gonna be used to connect to the database.
-    - **db_password** represents the password of the user that it's gonna be used to connect to the database.
-    - **db_host** The host where the database is running.
+    - **db_name** represents the name of the database where we want to connect. It's possible to use an environment variable in this field.
+    - **db_user** represents the name of the user that it's gonna be used to connect to the database. It's possible to use an environment variable in this field.
+    - **db_password** represents the password of the user that it's gonna be used to connect to the database. It's possible to use an environment variable in this field.
+    - **db_host** The host where the database is running. It's possible to use an environment variable in this field.
     - **transpose** Tells if the table generated after the query has to be transposed. O means False, 1 means True.
     - **variable** If a query is marked as a variable, it will save the result of the query in memory and use it when is necessary in the following queries. If the result of the query is a martix it will only use result[0][0].
     - **csv** Tells if the table should be attached to a csv file or rendered in the body of the email. O means False, 1 means True.
@@ -90,6 +90,11 @@ of the month on witch the report will be excuted. If the tag **day** and **weekd
         miss this tag *PyDbReport* it's going to use a default template.
 
 
+### environment variable
+In the fields **db_name**, **db_host**, **db_user**, **db_password** it's possible to use environment variables instead of a hardcoded value. How?
+
+    Instead of using
+    <db_name>value</db_name> -> <db_name>$ENV:MY_ENV_VARIABLE</db_name>
 
 ### Report execution
 

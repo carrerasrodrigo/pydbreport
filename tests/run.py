@@ -28,11 +28,16 @@ class EmailServer(SMTPServer):
         b64 = email.message_from_string(message).get_payload()[0].get_payload()
         return base64.b64decode(b64)
 
+
 class PyDbRTest(unittest.TestCase):
     test_path = os.path.dirname(__file__)
 
     def setUp(self):
         self.server_em.messages = []
+        os.environ['DB_NAME'] = 'pydbreport'
+        os.environ['DB_USER'] = 'pydbreport'
+        os.environ['DB_PASSWORD'] = ''
+        os.environ['DB_HOST'] = 'localhost'
 
     @classmethod
     def setUpClass(cls):
@@ -195,6 +200,7 @@ class PyDbRTest(unittest.TestCase):
         self.assertRaises(pymysql.err.ProgrammingError, f)
         with open(os.path.join(elog, 'pydbr.log')) as ff:
             self.assertTrue('error query' in ff.read())
+
 
 
 if __name__ == '__main__':
