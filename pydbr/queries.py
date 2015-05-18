@@ -98,7 +98,7 @@ def generate_csv(name, table):
 
 def parse_var(val):
     if val is not None and val.startswith('$ENV:'):
-        return os.environ.get(val.replace('$ENV', ''))
+        return os.environ.get(val.replace('$ENV:', ''))
     return val
 
 
