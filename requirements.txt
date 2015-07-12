@@ -1,2 +1,5 @@
 jinja2
-PyMySQL
+SQLAlchemy
+# optional depending of the engine you wanna use
+pymysql
+

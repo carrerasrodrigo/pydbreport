@@ -2,27 +2,23 @@
 <job>
     <emails>
         <email>test@t.com</email>
-        <cc>cc@cc.com</cc>
-        <bcc>bcc@bcc.com</bcc>
     </emails>
     <subject>test report</subject>
-    <sender>sender@test.com</sender>
+    <sender>sender@email.com</sender>
     <day>*</day>
-    <send_empty_email>0</send_empty_email>
     <queries>
         <query>
-            <db_type>mysql+pymysql</db_type>
+            <db_type>sqlite</db_type>
             <db_name>pydbreport</db_name>
             <db_user>pydbreport</db_user>
             <db_password></db_password>
             <db_host>localhost</db_host>
-            <db_options>charset=utf8</db_options>
+            <db_options></db_options>
             <transpose>0</transpose>
-            <csv>0</csv>
-            <csv_name></csv_name>
-            <send_empty_email>0</send_empty_email>
+            <csv>1</csv>
+            <csv_name>test.csv</csv_name>
             <code>
-                select * from famous_people where id = -1;
+                error query
             </code>
         </query>
     </queries>

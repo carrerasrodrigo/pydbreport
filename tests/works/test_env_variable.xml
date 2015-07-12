@@ -8,10 +8,12 @@
     <day>*</day>
     <queries>
         <query>
+            <db_type>mysql+pymysql</db_type>
             <db_name>$ENV:DB_NAME</db_name>
             <db_user>$ENV:DB_USER</db_user>
             <db_password>$ENV:DB_PASSWORD</db_password>
             <db_host>$ENV:DB_HOST</db_host>
+            <db_options>charset=utf8</db_options>
             <transpose>0</transpose>
             <csv>0</csv>
             <csv_name></csv_name>

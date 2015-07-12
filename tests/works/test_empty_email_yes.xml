@@ -11,10 +11,12 @@
     <send_empty_email>1</send_empty_email>
     <queries>
         <query>
+            <db_type>mysql+pymysql</db_type>
             <db_name>pydbreport</db_name>
             <db_user>pydbreport</db_user>
             <db_password></db_password>
             <db_host>localhost</db_host>
+            <db_options>charset=utf8</db_options>
             <transpose>0</transpose>
             <csv>0</csv>
             <csv_name></csv_name>

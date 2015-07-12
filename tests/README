@@ -1,5 +1,14 @@
-If you want to run the test suit you will need to have mysql work and running in 
-your machine. 
-After that the test is assuming that you have a "root" user with a password "admin".
-After that, run the script db_init.sql that it's gonna create a table with some information 
+Test Running on Mysql
+---------------------
+
+If you want to run the test suit you will need to have mysql work and running in
+your machine.
+
+Run the following command into mysql
+$ mysql --user=root --password < tests/db_init.sql
+
+After that, run the script db_init.sql that it's gonna create a table with some information
 for the tests.
+
+Test Running on Mysql
+---------------------

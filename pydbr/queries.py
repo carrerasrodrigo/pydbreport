@@ -5,13 +5,15 @@ import csv
 import datetime
 import logging
 import os
-import pymysql
 import sys
+
 from jinja2 import Template
+from sqlalchemy import create_engine
 from send_email import send_email
 from xml.etree import ElementTree as ET
-py3 = sys.version_info[0] == 3
 
+
+py3 = sys.version_info[0] == 3
 logger = logging.getLogger('pydbr')
 
 
@@ -30,30 +32,39 @@ def scan_queries(path):
     return ret
 
 
-def run_query(db_name, user, password, host, query):
-    """Run a SQL query in MySql
+def get_connection_query(db_type, db_name, user, password, host, db_options):
+    if db_type == 'sqlite':
+        return u'sqlite:///{db_name}?{db_options}'.format(db_name=db_name,
+            db_options=db_options)
+    else:
+        return u'{db_type}://{db_user}:{db_password}@{host}/{db_name}' \
+            '?{db_options}'.format(
+                db_type=db_type, db_name=db_name, db_user=user,
+                db_password=password, host=host, db_options=db_options)
 
+
+def run_query(db_type, db_name, user, password, host, db_options, query):
+    """Run a SQL query
+
+    :param db_type: The type of connection available
     :param db_name: The name of the database
     :param user: The connection user for the database
     :param password: The password to connect to the database
     :param host: The host where you are going to connect
+    :param db_options: The options to configure the db
     :param query: The query that you want to run
     :returns: A matrix of queries
     """
-    password = "" if password is None else password
-    db = pymysql.connect(host=host,
-        user=user,
-        passwd=password,
-        db=db_name,
-        charset="utf8")
-    cur = db.cursor()
-    cur.execute(query)
-    rows = [[i[0] for i in cur.description]]
-    for row in cur:
-        rows.append(row)
-    cur.close()
-    db.close()
+    password = u"" if password is None else password
+    db_options = u"" if db_options is None else db_options
 
+    conn_query = get_connection_query(db_type, db_name, user, password, host,
+        db_options)
+    engine = create_engine(conn_query)
+    conn = engine.connect()
+    result = conn.execute(query)
+    rows = [result.keys()] + result.fetchall()
+    conn.close()
     return rows
 
 
@@ -143,7 +154,8 @@ def print_email_on_screen(body, csv_files):
 
 
 def __find_variables(queries):
-    data = [(q.find("variable").text, "") for q in queries if q.find("variable") is not None]
+    data = [(q.find("variable").text, "")
+        for q in queries if q.find("variable") is not None]
     return dict(data)
 
 
@@ -165,10 +177,13 @@ def process_xml(conf, xml):
         sql = __replace_query_variables(query.find("code").text, variables)
 
         try:
-            table = run_query(parse_var(query.find("db_name").text),
+            table = run_query(
+                parse_var(query.find("db_type").text),
+                parse_var(query.find("db_name").text),
                 parse_var(query.find("db_user").text),
                 parse_var(query.find("db_password").text),
                 parse_var(query.find("db_host").text),
+                parse_var(query.find("db_options").text),
                 sql
             )
         except:
@@ -176,7 +191,7 @@ def process_xml(conf, xml):
             raise
 
         if len(table) == 1 and send_empty_email is not None \
-            and send_empty_email.text == "0":
+                and send_empty_email.text == "0":
             continue
 
         if query.find("transpose").text != "0":
@@ -236,6 +251,7 @@ parser.add_argument("--smtp-user", help="The SMTP user. If Login it's required",
 parser.add_argument("--smtp-password", help="The SMTP password. If Login it's required", default=None, dest="smtp_password")
 parser.add_argument("--csv-tmp-folder", help="The folder where the csv files will be saved temporarily", default="/tmp", dest="tmp_folder")
 parser.add_argument("--log-folder", help="The folder where the query errors will be logged", default=None, dest="log_folder")
+
 
 def main(*args):
     conf = parser.parse_args(args) if len(args) > 0 else parser.parse_args()

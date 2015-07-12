@@ -8,10 +8,12 @@
     <day>*</day>
     <queries>
         <query>
+            <db_type>mysql+pymysql</db_type>
             <db_name>pydbreport</db_name>
             <db_user>pydbreport</db_user>
             <db_password></db_password>
             <db_host>localhost</db_host>
+            <db_options>charset=utf8</db_options>
             <transpose>0</transpose>
             <variable>$1</variable>
             <csv_name></csv_name>
@@ -20,10 +22,12 @@
             </code>
         </query>
         <query>
+            <db_type>mysql+pymysql</db_type>
             <db_name>pydbreport</db_name>
             <db_user>pydbreport</db_user>
             <db_password></db_password>
             <db_host>localhost</db_host>
+            <db_options>charset=utf8</db_options>
             <transpose>0</transpose>
             <variable>$2</variable>
             <csv_name></csv_name>
@@ -32,10 +36,12 @@
             </code>
         </query>
         <query>
+            <db_type>mysql+pymysql</db_type>
             <db_name>pydbreport</db_name>
             <db_user>pydbreport</db_user>
             <db_password></db_password>
             <db_host>localhost</db_host>
+            <db_options>charset=utf8</db_options>
             <transpose>0</transpose>
             <csv>0</csv>
             <code>

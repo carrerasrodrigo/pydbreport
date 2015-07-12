@@ -12,7 +12,7 @@ import email
 import time
 import threading
 import unittest
-import pymysql
+import sqlalchemy
 from pydbr.queries import main, scan_queries, run_query, render_table
 from smtpd import SMTPServer
 
@@ -78,15 +78,25 @@ class PyDbRTest(unittest.TestCase):
         self.assertEqual(len(xmls), 0)
 
     def test_run_query(self):
-        query = run_query("pydbreport", "pydbreport", "", "localhost",
+        query = run_query("mysql+pymysql", "pydbreport", "pydbreport",
+            "", "localhost", None,
+            "select first_name, rating from famous_people limit 2;")
+        self.assertEqual(len(query), 3)
+        self.assertEqual(query[0][0], "first_name")
+
+    def test_run_query_sqlite(self):
+        db_name = os.path.join(os.path.dirname(__file__), 'test.db')
+        query = run_query("sqlite", db_name, None, None, None, None,
             "select first_name, rating from famous_people limit 2;")
         self.assertEqual(len(query), 3)
         self.assertEqual(query[0][0], "first_name")
 
     def test_render_table(self):
         xmls = scan_queries(os.path.join(self.test_path, "works"))
-        query = run_query("pydbreport", "pydbreport", "", "localhost",
+        query = run_query("mysql+pymysql", "pydbreport", "pydbreport",
+            "", "localhost", None,
             "select first_name, rating from famous_people limit 2;")
+
         r = render_table(xmls[0].find("queries").find("query"), query)
         self.assertTrue("first_name" in r)
         self.assertTrue("rating" in r)
@@ -197,7 +207,16 @@ class PyDbRTest(unittest.TestCase):
         elog = os.path.join(self.test_path, "works_error")
         arg = "--smtp-port=2525 --smtp-host=localhost --xml={0} --emails=noemail@email.com --log-folder={1}".format(p, elog)
         f = lambda: main(*arg.split(" "))
-        self.assertRaises(pymysql.err.ProgrammingError, f)
+        self.assertRaises(sqlalchemy.exc.ProgrammingError, f)
+        with open(os.path.join(elog, 'pydbr.log')) as ff:
+            self.assertTrue('error query' in ff.read())
+
+    def test_error_log_sqlite(self):
+        p = os.path.join(self.test_path, "works_error", "test_error_sqlite.xml")
+        elog = os.path.join(self.test_path, "works_error")
+        arg = "--smtp-port=2525 --smtp-host=localhost --xml={0} --emails=noemail@email.com --log-folder={1}".format(p, elog)
+        f = lambda: main(*arg.split(" "))
+        self.assertRaises(sqlalchemy.exc.OperationalError, f)
         with open(os.path.join(elog, 'pydbr.log')) as ff:
             self.assertTrue('error query' in ff.read())
 
