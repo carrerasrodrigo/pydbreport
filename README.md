@@ -99,7 +99,7 @@ Note that changing the value in **db_type** you can access to a sqlite, mysql, p
 
 Depending of the engine that you are gonna connect you will have to install specific connector, for example:
 
-For **mysql** set db_type=mysql+pymysql and  
+For **mysql** set db_type=mysql+pymysql and
 
     $ pip install pymysql
 
@@ -189,5 +189,5 @@ Then you need to specify to *pydbr* which template you want to use for your quer
 This project has been tested on Python 2.7+ and Python 3.4+
 
 ### Version history
-
+0.5.0 - Added more colors to the template used to send the information
 0.4.0 - Added support for multiple database engines via sqlalchemy.
