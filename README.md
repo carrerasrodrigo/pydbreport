@@ -94,7 +94,21 @@ of the month on witch the report will be excuted. If the tag **day** and **weekd
         miss this tag *PyDbReport* it's going to use a default template.
 
 
-### environment variable
+### Supported database engines
+Note that changing the value in **db_type** you can access to a sqlite, mysql, postgres, etc without a problem. The full list engines supported can be found here: http://docs.sqlalchemy.org/en/latest/dialects/
+
+Depending of the engine that you are gonna connect you will have to install specific connector, for example:
+
+For **mysql** set db_type=mysql+pymysql and  
+
+    $ pip install pymysql
+
+For **postgres** set db_type=postgresql+psycopg2 and
+
+    $ pip install psycopg2
+
+
+### Environment variable
 In the fields **db_name**, **db_host**, **db_user**, **db_password** it's possible to use environment variables instead of a hardcoded value. How?
 
     Instead of using
