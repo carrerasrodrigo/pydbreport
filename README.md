@@ -46,10 +46,12 @@ that you want to send. The format of the xml it's the following:
     <send_empty_email>1</send_empty_email>
     <queries>
         <query>
+            <db_type>mysql+pymysql</db_type>
             <db_name>pydbreport</db_name>
             <db_user>root</db_user>
             <db_password>admin</db_password>
             <db_host>localhost</db_host>
+            <db_options>charset=utf8</db_options>
             <transpose>0</transpose>
             <csv>1</csv>
             <csv_name>test.csv</csv_name>
@@ -76,10 +78,12 @@ of the month on witch the report will be excuted. If the tag **day** and **weekd
  - **send_empty_email** If is '0' don't send the email in case that the query is empty. If the tag is ignored the default value is '1'.
  - **queries** is a list of **query** that will be attached to the email.
  - **query** is a query that will be attached to the email with the following tags
+    - **db_type** represents the connector that we want to use to access to the database. You can find the list of available connector here: http://docs.sqlalchemy.org/en/latest/dialects/
     - **db_name** represents the name of the database where we want to connect. It's possible to use an environment variable in this field.
     - **db_user** represents the name of the user that it's gonna be used to connect to the database. It's possible to use an environment variable in this field.
     - **db_password** represents the password of the user that it's gonna be used to connect to the database. It's possible to use an environment variable in this field.
     - **db_host** The host where the database is running. It's possible to use an environment variable in this field.
+    - **db_options** The options that we want to use to connect our db. It can be empty by default but is very handly to set params like the encoding. Note that the avilable options will depend of the db_type that you set.
     - **transpose** Tells if the table generated after the query has to be transposed. O means False, 1 means True.
     - **variable** If a query is marked as a variable, it will save the result of the query in memory and use it when is necessary in the following queries. If the result of the query is a martix it will only use result[0][0].
     - **csv** Tells if the table should be attached to a csv file or rendered in the body of the email. O means False, 1 means True.
@@ -168,4 +172,8 @@ Then you need to specify to *pydbr* which template you want to use for your quer
 
 ### Tested
 
-This project has been tested on Python 2.7+ and Python 3.3+
+This project has been tested on Python 2.7+ and Python 3.4+
+
+### Version history
+
+0.4.0 - Added support for multiple database engines via sqlalchemy.
