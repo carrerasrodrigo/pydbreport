@@ -80,12 +80,13 @@ def render_table(query, table):
             "templates", "base.jinja")
     else:
         template_path = query.find("template_path").text
+    transpose = query.find("transpose").text == "1"
 
     with open(template_path, "r") as f:
         template_content = f.read()
 
     template = Template(template_content)
-    return template.render(table=table)
+    return template.render(table=table, transpose=transpose)
 
 
 def generate_csv(name, table):
