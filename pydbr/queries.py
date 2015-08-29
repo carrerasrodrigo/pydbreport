@@ -8,8 +8,8 @@ import os
 import sys
 
 from jinja2 import Template
-from sqlalchemy import create_engine
 from send_email import send_email
+from sqlalchemy import create_engine
 from xml.etree import ElementTree as ET
 
 
@@ -63,7 +63,10 @@ def run_query(db_type, db_name, user, password, host, db_options, query):
     engine = create_engine(conn_query)
     conn = engine.connect()
     result = conn.execute(query)
-    rows = [result.keys()] + result.fetchall()
+
+    rows = []
+    if len(result.keys()) > 0:
+        rows = [result.keys()] + result.fetchall()
     conn.close()
     return rows
 
@@ -191,7 +194,7 @@ def process_xml(conf, xml):
             logger.error('Error running query: %s', sql)
             raise
 
-        if len(table) == 1 and send_empty_email is not None \
+        if len(table) <= 1 and send_empty_email is not None \
                 and send_empty_email.text == "0":
             continue
 

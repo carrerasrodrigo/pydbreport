@@ -1,13 +1,13 @@
 {# Base template for rendering #}
-<table style="border-collapse: collapse;border-spacing: 0;empty-cells: show;border: 1px solid #1f8dd6; min-width: 500px; font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif;line-height: 1.6; padding: 5px;">
+<table style="border-collapse: collapse;border-spacing: 0;empty-cells: show;border: 1px solid #01ffaf; min-width: 500px; font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif;line-height: 1.6; padding: 5px;">
     {% for row in table %}
         {% if loop.index == 1 and not transpose %}
-            <tr style='background-color: #1f8dd6;color: #ffffff;text-align: left;vertical-align: bottom;'>
+            <tr style='background-color: #01ffaf;color: #ffffff;text-align: left;vertical-align: bottom;'>
         {% else %}
             <tr>
         {% endif %}
             {% for cell in row %}
-                <td style="border-left: 1px solid #1f8dd6;border-width: 0 0 0 1px;font-size: inherit;margin: 0;overflow: visible;padding: 5px; border-bottom: 1px solid #1f8dd6; text-aling: center">
+                <td style="border-left: 1px solid #01ffaf;border-width: 0 0 0 1px;font-size: inherit;margin: 0;overflow: visible;padding: 5px; border-bottom: 1px solid #01ffaf; text-aling: center">
                     {{ cell }}
                 </td>
             {% endfor %}

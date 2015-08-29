@@ -140,7 +140,7 @@ class PyDbRTest(unittest.TestCase):
         p = os.path.join(self.test_path, "works")
         arg = "--smtp-port=2525 --smtp-host=localhost --reportpath={0}".format(p)
         main(*arg.split(" "))
-        self.assertEqual(len(self.server_em.messages), self.xml_test_cases - 2)
+        self.assertEqual(len(self.server_em.messages), self.xml_test_cases - 3)
 
     def test_day_hour(self):
         p = os.path.join(self.test_path, "works", "test_time_to_send.xml")
@@ -201,6 +201,12 @@ class PyDbRTest(unittest.TestCase):
         arg = "--smtp-port=2525 --smtp-host=localhost --xml={0} --emails=noemail@email.com".format(p)
         main(*arg.split(" "))
         self.assertEqual(1, len(self.server_em.messages))
+
+    def test_query_with_no_select(self):
+        p = os.path.join(self.test_path, "works", "test_update_query.xml")
+        arg = "--smtp-port=2525 --smtp-host=localhost --xml={0} --emails=noemail@email.com".format(p)
+        main(*arg.split(" "))
+        self.assertEqual(0, len(self.server_em.messages))
 
     def test_error_log(self):
         p = os.path.join(self.test_path, "works_error", "test_error.xml")
