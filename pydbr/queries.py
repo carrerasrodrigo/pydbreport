@@ -7,6 +7,7 @@ import logging
 import os
 import sys
 
+from celeryconf import setup_celery
 from jinja2 import Template
 from send_email import send_email
 from sqlalchemy import create_engine
@@ -15,6 +16,11 @@ from xml.etree import ElementTree as ET
 
 py3 = sys.version_info[0] == 3
 logger = logging.getLogger('pydbr')
+
+
+def read_query(p):
+    with open(p, "r") as f:
+        return ET.XML(f.read())
 
 
 def scan_queries(path):
@@ -27,8 +33,7 @@ def scan_queries(path):
     for root, dirs, files in os.walk(path):
         for f in filter(lambda x: x.endswith(".xml"), files):
             p = os.path.join(root, f)
-            with open(p, "r") as f:
-                ret.append(ET.XML(f.read()))
+            ret.append(read_query(p))
     return ret
 
 
@@ -255,6 +260,8 @@ parser.add_argument("--smtp-user", help="The SMTP user. If Login it's required",
 parser.add_argument("--smtp-password", help="The SMTP password. If Login it's required", default=None, dest="smtp_password")
 parser.add_argument("--csv-tmp-folder", help="The folder where the csv files will be saved temporarily", default="/tmp", dest="tmp_folder")
 parser.add_argument("--log-folder", help="The folder where the query errors will be logged", default=None, dest="log_folder")
+parser.add_argument("--beat", help="Tell's pydbr to engage celery beat mode", action="store_true", dest="beat")
+parser.add_argument("--beat-broker-config", help="Broker config for celery", default='redis://localhost:6379/0', dest="beat_broker_config")
 
 
 def main(*args):
@@ -269,13 +276,16 @@ def main(*args):
     if conf.xml is None:
         xmls = scan_queries(conf.reportpath)
     else:
-        with open(conf.xml, "r") as f:
-            xmls = [ET.XML(f.read())]
+        xmls = [read_query(conf.xml)]
 
-    for xml in xmls:
-        process_xml(conf, xml)
+    if conf.beat:
+        setup_celery(conf, process_xml, xmls)
+    else:
+        for xml in xmls:
+            process_xml(conf, xml)
 
     return True
+
 
 if __name__ == '__main__':
     main(*sys.argv[1:])
