@@ -123,6 +123,9 @@ def parse_var(val):
 
 
 def __hour_is_ok(xml):
+    if xml.find("cron") is not None:
+        return True
+
     hour = datetime.datetime.now().hour
     hours = xml.find("hours")
     if hours is not None:
@@ -132,7 +135,9 @@ def __hour_is_ok(xml):
 
 
 def __day_is_ok(xml):
-    # Tener en cuenta que el tag <day> tiene mayor prioridad que <weekday>
+    if xml.find("cron") is not None:
+        return True
+
     day = datetime.datetime.now().day
     weekday = datetime.datetime.now().weekday()
     days = xml.find("day")
