@@ -2,4 +2,5 @@ jinja2
 SQLAlchemy
 # optional depending of the engine you wanna use
 pymysql
-
+celery
+celery[redis]

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<job>
+    <emails>
+        <email>test@t.com</email>
+    </emails>
+    <subject>test report</subject>
+    <sender>sender@email.com</sender>
+    <day>*</day>
+    <cron>* * * * *</cron>
+    <queries>
+        <query>
+            <db_type>mysql+pymysql</db_type>
+            <db_name>pydbreport</db_name>
+            <db_user>pydbreport</db_user>
+            <db_password></db_password>
+            <db_host>localhost</db_host>
+            <db_options>charset=utf8</db_options>
+            <transpose>0</transpose>
+            <csv>1</csv>
+            <csv_name>test.csv</csv_name>
+            <code>
+                select first_name, rating from famous_people;
+            </code>
+        </query>
+    </queries>
+</job>

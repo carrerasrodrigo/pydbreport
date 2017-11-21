@@ -43,6 +43,7 @@ that you want to send. The format of the xml it's the following:
     <subject>test report</subject>
     <sender>sender@email.com</sender>
     <day>*</day>
+    <cron>* * * * *</cron>
     <send_empty_email>1</send_empty_email>
     <queries>
         <query>
@@ -75,6 +76,7 @@ of the month on witch the report will be excuted. If the tag **day** and **weekd
     added at the same time, **weekday** will be ignored.
  - **hours** is a string that specify at which hour the query has to run. You can use '*' to execute the report every hour or '0,13' to send the email at 12 AM and 1PM. If the tag is ignored '*' will be used.
  the email on mondays and tuesdays.
+ - **cron** If beat mode is enabled, this field will identify when to run the job. **day**, **hours** and **weekday** will be ignored if beat mode is used and replaced by **cron**.
  - **send_empty_email** If is '0' don't send the email in case that the query is empty. If the tag is ignored the default value is '1'.
  - **queries** is a list of **query** that will be attached to the email.
  - **query** is a query that will be attached to the email with the following tags
@@ -133,6 +135,8 @@ here you have some examples:
 - **smtp-port**: The SMTP host port
 - **csv-tmp-folder**: The folder where the csv files will be saved temporarily
 - **log-folder**: The path of the folder where pydbr will keep the error log.
+- **beat**: To enable celery beat and use the internal cron system.
+- **beat-broker-config**: Configuration of the broker. By default is redis://localhost:6379/0
 
 
 ### How to run the reports every day?
@@ -189,8 +193,7 @@ Then you need to specify to *pydbr* which template you want to use for your quer
 This project has been tested on Python 2.7+ and Python 3.4+
 
 ### Version history
-
-0.5.3 - Added support for insert, update and delete queries.    
-0.5.0 - Added more colors to the template used to send the information.   
-0.4.0 - Added support for multiple database engines via sqlalchemy.    
-
+0.6.0 - Support for beat mode
+0.5.3 - Added support for insert, update and delete queries.
+0.5.0 - Added more colors to the template used to send the information.
+0.4.0 - Added support for multiple database engines via sqlalchemy.
