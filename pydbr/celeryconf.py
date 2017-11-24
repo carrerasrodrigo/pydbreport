@@ -1,7 +1,12 @@
 from __future__ import absolute_import
 
+import logging
+
 from celery import Celery
 from celery.schedules import crontab
+
+
+logger = logging.getLogger('pydbr')
 
 
 def setup_celery(conf, method, xml_list):
@@ -9,7 +14,9 @@ def setup_celery(conf, method, xml_list):
 
     @app.task(serializer='pickle')
     def execute(conf, xml):
+        logger.info('running job {}'.format(xml.find('subject').text))
         method(conf, xml)
+        logger.info('job done {}'.format(xml.find('subject').text))
 
     @app.on_after_configure.connect
     def setup_periodic_tasks(sender, **kwargs):
