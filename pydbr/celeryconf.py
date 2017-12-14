@@ -31,7 +31,7 @@ def setup_celery(conf, method, xml_list):
             )
     argv = [
         'worker',
-        '--loglevel={}'.format(conf['beat_log_level']),
+        '--loglevel={}'.format(conf.beat_log_level),
         '--beat'
     ]
     app.conf.broker_url = conf.beat_broker_config
