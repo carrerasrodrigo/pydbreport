@@ -200,7 +200,7 @@ def process_xml(conf, xml):
                 parse_var(query.find("db_options").text),
                 sql
             )
-        except:
+        except Exception:
             logger.error('Error running query: %s', sql)
             raise
 
@@ -214,11 +214,14 @@ def process_xml(conf, xml):
         if query.find("variable") is not None:
             variables[query.find("variable").text] = str(table[1][0])
         elif query.find("csv").text != "0":
-            cs_name = os.path.join(conf.tmp_folder, query.find("csv_name").text)
+            cs_name = os.path.join(conf.tmp_folder,
+                query.find("csv_name").text)
             cs = generate_csv(cs_name, table)
             csvs.append(cs)
         else:
             el.extend(render_table(query, table))
+
+    logger.info(u'done executing queries {}'.format(xml.find('subject').text))
 
     emails = []
     if conf.output == "email":
@@ -267,6 +270,7 @@ parser.add_argument("--csv-tmp-folder", help="The folder where the csv files wil
 parser.add_argument("--log-folder", help="The folder where the query errors will be logged", default=None, dest="log_folder")
 parser.add_argument("--beat", help="Tell's pydbr to engage celery beat mode", action="store_true", dest="beat")
 parser.add_argument("--beat-broker-config", help="Broker config for celery", default='redis://localhost:6379/0', dest="beat_broker_config")
+parser.add_argument("--beat-log-level", help="The loglevel of celery beat", default='INFO', dest="beat_log_level")
 
 
 def main(*args):

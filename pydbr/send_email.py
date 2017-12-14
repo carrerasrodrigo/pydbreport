@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
-#--------------------------------------
+
 import os, smtplib
+import logging
+
 try:
     from email.MIMEMultipart import MIMEMultipart
     from email.MIMEBase import MIMEBase
@@ -17,8 +19,12 @@ except ImportError:
     from email import encoders
     py3 = True
 
-def send_email(sfrom, to, subject, body, cc=[], bcc=[], files=[], host="localhost",
-    port=25, user=None, password=None):
+
+logger = logging.getLogger('pydbr')
+
+
+def send_email(sfrom, to, subject, body, cc=[], bcc=[], files=[],
+        host="localhost", port=25, user=None, password=None):
     """Send an email
 
     :param sfrom: The email of the sender
@@ -34,6 +40,8 @@ def send_email(sfrom, to, subject, body, cc=[], bcc=[], files=[], host="localhos
     :param password: The password that we want to use in case that
         authentication it's needed
     """
+    logger.info(u'building email {}'.format(subject))
+
     msg = MIMEMultipart()
     msg['From'] = sfrom
     msg['To'] = ",".join(to)
@@ -61,5 +69,6 @@ def send_email(sfrom, to, subject, body, cc=[], bcc=[], files=[], host="localhos
             smtp.login(user, password)
         smtp.sendmail(sfrom, to + cc + bcc, msg.as_string())
         smtp.close()
-    except:
+        logger.info(u'email sent {}'.format(subject))
+    except Exception:
         raise
