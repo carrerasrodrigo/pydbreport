@@ -84,17 +84,23 @@ def render_table(query, table):
     :returns: An string representing an html table
     """
     if query.find("template_path") is None:
-        template_path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
+        template_path = os.path.join(
+            os.path.abspath(os.path.dirname(__file__)),
             "templates", "base.jinja")
     else:
         template_path = query.find("template_path").text
     transpose = query.find("transpose").text == "1"
 
+    try:
+        title = query.find("title").text
+    except AttributeError:
+        title = None
+
     with open(template_path, "r") as f:
         template_content = f.read()
 
     template = Template(template_content)
-    return template.render(table=table, transpose=transpose)
+    return template.render(table=table, transpose=transpose, title=title)
 
 
 def generate_csv(name, table):

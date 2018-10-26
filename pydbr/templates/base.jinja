@@ -1,4 +1,7 @@
 {# Base template for rendering #}
+{% if title %}
+    <h3>{{title}}</h3>
+{% endif %}
 <table style="border-collapse: collapse;border-spacing: 0;empty-cells: show;border: 1px solid #01ffaf; min-width: 500px; font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif;line-height: 1.6; padding: 5px;">
     {% for row in table %}
         {% if loop.index == 1 and not transpose %}

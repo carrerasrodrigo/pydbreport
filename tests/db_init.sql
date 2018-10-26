@@ -13,6 +13,3 @@ INSERT INTO `pydbreport`.`famous_people` (`id`,`first_name`, `last_name`, `ratin
 INSERT INTO `pydbreport`.`famous_people` (`id`,`first_name`, `last_name`, `rating`) VALUES (2, 'Bruno', 'Diaz', '15');
 INSERT INTO `pydbreport`.`famous_people` (`id`,`first_name`, `last_name`, `rating`) VALUES (3, 'Clark', 'Kent', '1');
 INSERT INTO `pydbreport`.`famous_people` (`id`,`first_name`, `last_name`, `rating`) VALUES (4, 'wéirdnámé', 'ñaéd', '1');
-
-CREATE USER 'pydbreport'@'localhost';
-GRANT ALL ON pydbreport.* TO 'pydbreport'@'localhost';

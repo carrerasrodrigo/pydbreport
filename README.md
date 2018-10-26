@@ -53,6 +53,7 @@ that you want to send. The format of the xml it's the following:
             <db_password>admin</db_password>
             <db_host>localhost</db_host>
             <db_options>charset=utf8</db_options>
+            <title>some title</title>
             <transpose>0</transpose>
             <csv>1</csv>
             <csv_name>test.csv</csv_name>
@@ -86,6 +87,7 @@ of the month on witch the report will be excuted. If the tag **day** and **weekd
     - **db_password** represents the password of the user that it's gonna be used to connect to the database. It's possible to use an environment variable in this field.
     - **db_host** The host where the database is running. It's possible to use an environment variable in this field.
     - **db_options** The options that we want to use to connect our db. It can be empty by default but is very handly to set params like the encoding. Note that the avilable options will depend of the db_type that you set.
+    - **title** The title that we want to give to our generated table. It's optional.
     - **transpose** Tells if the table generated after the query has to be transposed. O means False, 1 means True.
     - **variable** If a query is marked as a variable, it will save the result of the query in memory and use it when is necessary in the following queries. If the result of the query is a martix it will only use result[0][0].
     - **csv** Tells if the table should be attached to a csv file or rendered in the body of the email. O means False, 1 means True.
@@ -193,6 +195,7 @@ Then you need to specify to *pydbr* which template you want to use for your quer
 This project has been tested on Python 2.7+ and Python 3.4+
 
 ### Version history
+0.7.0 - Added new title tag to make the emails more readable.
 0.6.0 - Support for beat mode
 0.5.3 - Added support for insert, update and delete queries.
 0.5.0 - Added more colors to the template used to send the information.

@@ -35,9 +35,9 @@ class PyDbRTest(unittest.TestCase):
     def setUp(self):
         self.server_em.messages = []
         os.environ['DB_NAME'] = 'pydbreport'
-        os.environ['DB_USER'] = 'pydbreport'
+        os.environ['DB_USER'] = 'root'
         os.environ['DB_PASSWORD'] = ''
-        os.environ['DB_HOST'] = 'localhost'
+        os.environ['DB_HOST'] = 'pydbr-mysql'
 
     @classmethod
     def setUpClass(cls):
@@ -78,8 +78,8 @@ class PyDbRTest(unittest.TestCase):
         self.assertEqual(len(xmls), 0)
 
     def test_run_query(self):
-        query = run_query("mysql+pymysql", "pydbreport", "pydbreport",
-            "", "localhost", None,
+        query = run_query("mysql+pymysql", "pydbreport", "root",
+            "", "pydbr-mysql", None,
             "select first_name, rating from famous_people limit 2;")
         self.assertEqual(len(query), 3)
         self.assertEqual(query[0][0], "first_name")
@@ -93,8 +93,8 @@ class PyDbRTest(unittest.TestCase):
 
     def test_render_table(self):
         xmls = scan_queries(os.path.join(self.test_path, "works"))
-        query = run_query("mysql+pymysql", "pydbreport", "pydbreport",
-            "", "localhost", None,
+        query = run_query("mysql+pymysql", "pydbreport", "root",
+            "", "pydbr-mysql", None,
             "select first_name, rating from famous_people limit 2;")
 
         r = render_table(xmls[0].find("queries").find("query"), query)
