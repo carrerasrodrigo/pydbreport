@@ -36,5 +36,5 @@ def setup_celery(conf, method, xml_list):
     ]
     app.conf.broker_url = conf.beat_broker_config
     app.conf.beat_max_loop_interval = 30
-    app.conf.accept_content = ['pickle']
+    app.conf.accept_content = ['pickle', 'json']
     app.worker_main(argv)
