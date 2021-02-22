@@ -1,23 +1,14 @@
 # -*- coding: utf-8 -*-
 
-import os, smtplib
 import logging
+import os
+import smtplib
 
-try:
-    from email.MIMEMultipart import MIMEMultipart
-    from email.MIMEBase import MIMEBase
-    from email.MIMEText import MIMEText
-    from email.Utils import formatdate
-    from email import Encoders as encoders
-    py3 = False
-except ImportError:
-    # Python 3
-    from email.mime.multipart import MIMEMultipart
-    from email.mime.base import MIMEBase
-    from email.mime.text import MIMEText
-    from email.utils import formatdate
-    from email import encoders
-    py3 = True
+from email import encoders
+from email.mime.base import MIMEBase
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.utils import formatdate
 
 
 logger = logging.getLogger('pydbr')
@@ -50,10 +41,7 @@ def send_email(sfrom, to, subject, body, cc=[], bcc=[], files=[],
     msg['Date'] = formatdate(localtime=True)
     msg['Subject'] = subject
 
-    if py3:
-        msg.attach(MIMEText(body, "html"))
-    else:
-        msg.attach(MIMEText(body, "html", "utf-8"))
+    msg.attach(MIMEText(body, "html"))
 
     for f in files:
         part = MIMEBase('application', "octet-stream")
