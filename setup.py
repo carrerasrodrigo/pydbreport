@@ -8,7 +8,7 @@ A small report system for python
 from setuptools import setup, find_packages
 
 setup(
-    name='Python Db Report',
+    name='pydbreport',
     version='0.7.0',
     url='https://github.com/carrerasrodrigo/pydbreport',
     license='mit',
