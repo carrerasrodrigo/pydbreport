@@ -20,7 +20,7 @@ setup(
     zip_safe=False,
     platforms='any',
     classifiers=[],
-    install_requires=['jinja2>2', 'PyMySQL>0.6', 'SQLAlchemy', 'celery'],
+    install_requires=['jinja2>2', 'PyMySQL>0.6', 'SQLAlchemy', 'croniter', 'pytz'],
     entry_points={
         'console_scripts': [
             'pydbr=pydbr.queries:main',

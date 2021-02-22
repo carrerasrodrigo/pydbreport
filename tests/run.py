@@ -253,7 +253,7 @@ class PyDbRTest(unittest.TestCase):
             pass
         p = os.path.join(self.test_path, "works", "test_beat.xml")
         arg = "--smtp-port=2525 --smtp-host=localhost --xml={0} --beat --emails=noemail@email.com".format(p)
-        with patch('schedulerconf.Scheduler.loop') as f:
+        with patch('pydbr.schedulerconf.Scheduler.loop') as f:
             main(*arg.split(" "))
             self.assertTrue(f.called)
 

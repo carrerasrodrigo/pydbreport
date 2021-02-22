@@ -7,14 +7,13 @@ import logging
 import os
 import sys
 
+from .schedulerconf import start_loop
+from .send_email import send_email
 from jinja2 import Template
-from schedulerconf import start_loop
-from send_email import send_email
 from sqlalchemy import create_engine
 from xml.etree import ElementTree as ET
 
 
-py3 = sys.version_info[0] == 3
 logger = logging.getLogger('pydbr')
 
 
@@ -114,11 +113,7 @@ def generate_csv(name, table):
         writer = csv.writer(csvfile, delimiter=',',
                             quotechar='|', quoting=csv.QUOTE_MINIMAL)
         for row in table:
-            if py3:
-                writer.writerow(row)
-            else:
-                writer.writerow(
-                    [unicode(i).encode("utf-8") for i in row])
+            writer.writerow(row)
     return name
 
 
