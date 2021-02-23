@@ -11,9 +11,10 @@ logger = logging.getLogger('pydbr')
 
 
 class Task(object):
-    def __init__(self, cron, job, task_name):
+    def __init__(self, cron, job, job_args, task_name):
         self.event = cron
         self.job = job
+        self.job_args = job_args
         self.next_iter = self.event.get_next(datetime)
         self.task_name = task_name
 
@@ -23,7 +24,7 @@ class Task(object):
 
     def execute(self):
         logger.info(f'{self.task_name} executing now')
-        self.job()
+        self.job(*self.job_args)
         self.next_iter = self.event.get_next(datetime)
         logger.info(f'{self.task_name} done, next execution {self.next_iter}')
 
@@ -34,6 +35,7 @@ class Scheduler(object):
 
     def add_task(self, task):
         self.tasks.append(task)
+        logger.info(f'{task.task_name} added to scheduler, next_iter {task.next_iter}')
 
     def loop(self):
         while True:
@@ -49,6 +51,7 @@ def start_loop(conf, method, xml_list):
 
     logger.info('starting pydbr scheduler')
     scheduler = Scheduler()
+
     for xml in xml_list:
         subject = xml.find('subject').text
         if xml.find("cron") is None or \
@@ -57,13 +60,7 @@ def start_loop(conf, method, xml_list):
             continue
 
         cron = croniter(xml.find("cron").text, base)
-
-        def execute():
-            logger.info(f'running job {subject}')
-            method(conf, xml)
-            logger.info(f'job done {subject}')
-
-        task = Task(cron, execute, subject)
+        task = Task(cron, method, (conf, xml), subject)
         logger.info(f'adding task {subject} to scheduler')
         scheduler.add_task(task)
 
