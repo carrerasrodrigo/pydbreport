@@ -9,7 +9,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='pydbreport',
-    version='0.7.0',
+    version='1.0.0',
     url='https://github.com/carrerasrodrigo/pydbreport',
     license='mit',
     author='Rodrigo N. Carreras',
