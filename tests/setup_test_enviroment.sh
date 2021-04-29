@@ -7,3 +7,4 @@ while [ $? -ne 0 ]; do
     sleep 2
     docker exec -it pydbr-mysql bash -c "mysql --host=localhost --user=root < /data/tests/db_init.sql"
 done
+echo "done"

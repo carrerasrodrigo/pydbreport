@@ -7,14 +7,13 @@ import logging
 import os
 import sys
 
-from celeryconf import setup_celery
 from jinja2 import Template
-from send_email import send_email
+from .schedulerconf import start_loop
+from .send_email import send_email
 from sqlalchemy import create_engine
 from xml.etree import ElementTree as ET
 
 
-py3 = sys.version_info[0] == 3
 logger = logging.getLogger('pydbr')
 
 
@@ -114,11 +113,7 @@ def generate_csv(name, table):
         writer = csv.writer(csvfile, delimiter=',',
                             quotechar='|', quoting=csv.QUOTE_MINIMAL)
         for row in table:
-            if py3:
-                writer.writerow(row)
-            else:
-                writer.writerow(
-                    [unicode(i).encode("utf-8") for i in row])
+            writer.writerow(row)
     return name
 
 
@@ -191,9 +186,9 @@ def process_xml(conf, xml):
     if not __day_is_ok(xml):
         # Ignores the xml files that we dont have to run that day
         return
-    variables = __find_variables(xml.find("./queries").getchildren())
+    variables = __find_variables(xml.find("./queries"))
     send_empty_email = xml.find("send_empty_email")
-    for query in xml.find("./queries").getchildren():
+    for query in xml.find("./queries"):
         sql = __replace_query_variables(query.find("code").text, variables)
 
         try:
@@ -255,13 +250,15 @@ def process_xml(conf, xml):
         print_email_on_screen("".join(el), csvs)
 
 
-def configure_logging(log_folder):
+def configure_logging(log_folder, log_level):
     p = os.path.join(log_folder, 'pydbr.log')
     fh = logging.FileHandler(p)
     formatter = logging.Formatter('%(asctime)s - %(name)s - '
         '%(levelname)s - %(message)s')
     fh.setFormatter(formatter)
     logger.addHandler(fh)
+    logger.setLevel(log_level)
+
 
 parser = argparse.ArgumentParser(description="PyDbReport", add_help=True)
 parser.add_argument("--output", help="email or screen. If it's email it will send the report by email otherwise will print it on the screen", default="email")
@@ -274,9 +271,8 @@ parser.add_argument("--smtp-user", help="The SMTP user. If Login it's required",
 parser.add_argument("--smtp-password", help="The SMTP password. If Login it's required", default=None, dest="smtp_password")
 parser.add_argument("--csv-tmp-folder", help="The folder where the csv files will be saved temporarily", default="/tmp", dest="tmp_folder")
 parser.add_argument("--log-folder", help="The folder where the query errors will be logged", default=None, dest="log_folder")
-parser.add_argument("--beat", help="Tell's pydbr to engage celery beat mode", action="store_true", dest="beat")
-parser.add_argument("--beat-broker-config", help="Broker config for celery", default='redis://localhost:6379/0', dest="beat_broker_config")
-parser.add_argument("--beat-log-level", help="The loglevel of celery beat", default='INFO', dest="beat_log_level")
+parser.add_argument("--beat", help="Tell's pydbr to engage beat mode", action="store_true", dest="beat")
+parser.add_argument("--log-level", help="Indicates the log level", dest="log_level", default=logging.DEBUG)
 
 
 def main(*args):
@@ -286,7 +282,7 @@ def main(*args):
         raise Exception("Please use --xml or --reportpath")
 
     if conf.log_folder is not None:
-        configure_logging(conf.log_folder)
+        configure_logging(conf.log_folder, conf.log_level)
 
     if conf.xml is None:
         xmls = scan_queries(conf.reportpath)
@@ -294,7 +290,7 @@ def main(*args):
         xmls = [read_query(conf.xml)]
 
     if conf.beat:
-        setup_celery(conf, process_xml, xmls)
+        start_loop(conf, process_xml, xmls)
     else:
         for xml in xmls:
             process_xml(conf, xml)

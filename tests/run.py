@@ -1,26 +1,31 @@
 # -*- coding: utf-8 -*-
-import os
 import sys
-py3 = sys.version_info[0] == 3
+import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "pydbr"))
+
 
 import asyncore
 import base64
 import datetime
-import email
-import time
-import threading
-import unittest
-import sqlalchemy
-from pydbr.queries import main, scan_queries, run_query, render_table
 from smtpd import SMTPServer
+import threading
+import time
+import unittest
+
+from croniter import croniter
+import email
+from pydbr.queries import main, scan_queries, run_query, render_table
+from pydbr.schedulerconf import Task, Scheduler, start_loop
+import pytz
+import sqlalchemy
+from mock import Mock, patch
 
 
 class EmailServer(SMTPServer):
     messages = []
 
-    def process_message(self, peer, mailfrom, rcpttos, data):
+    def process_message(self, peer, mailfrom, rcpttos, data, *agrs, **kwargs):
         self.messages.append(data)
 
     @classmethod
@@ -107,32 +112,30 @@ class PyDbRTest(unittest.TestCase):
         arg = "--smtp-port=2525 --smtp-host=localhost --xml={0}".format(p)
         main(*arg.split(" "))
         message = self.server_em.messages.pop()
-        self.assertTrue("From: sender@test.com" in message)
-        self.assertTrue("To: test@t.com" in message)
+        self.assertTrue(b"From: sender@test.com" in message)
+        self.assertTrue(b"To: test@t.com" in message)
 
     def test_emails(self):
         p = os.path.join(self.test_path, "works", "test_no_csv.xml")
         arg = "--smtp-port=2525 --smtp-host=localhost --xml={0} --emails=noemail@email.com".format(p)
         main(*arg.split(" "))
         message = self.server_em.messages.pop()
-        self.assertTrue("To: noemail@email.com" in message)
+        self.assertTrue(b"To: noemail@email.com" in message)
 
     def test_bcc_cc(self):
         p = os.path.join(self.test_path, "works", "test_no_csv.xml")
         arg = "--smtp-port=2525 --smtp-host=localhost --xml={0}".format(p)
         main(*arg.split(" "))
         message = self.server_em.messages.pop()
-        self.assertTrue("To: test@t.com" in message)
-        self.assertTrue("Bcc: bcc@bcc.com" in message)
-        self.assertTrue("Cc: cc@cc.com" in message)
+        self.assertTrue(b"To: test@t.com" in message)
+        self.assertTrue(b"Bcc: bcc@bcc.com" in message)
+        self.assertTrue(b"Cc: cc@cc.com" in message)
 
     def test_variables(self):
         p = os.path.join(self.test_path, "works", "test_variables.xml")
         arg = "--smtp-port=2525 --smtp-host=localhost --xml={0}".format(p)
         main(*arg.split(" "))
         message = self.server_em.messages.pop()
-        if not py3:
-            message = self.server_em.dec(message)
         self.assertTrue("hallo_test" in str(message))
         self.assertTrue("Luke" in str(message))
 
@@ -226,6 +229,33 @@ class PyDbRTest(unittest.TestCase):
         with open(os.path.join(elog, 'pydbr.log')) as ff:
             self.assertTrue('error query' in ff.read())
 
+    def test_scheduler(self):
+        tz = pytz.timezone('UTC')
+        base = tz.localize(datetime.datetime.now()) - datetime.timedelta(minutes=10)
+
+        scheduler = Scheduler()
+        cron = croniter('* * * * *', base)
+
+        def execute():
+            pass
+
+        task = Task(cron, execute, 'task name')
+        scheduler.add_task(task)
+
+        self.assertEqual(len(scheduler.tasks), 1)
+        self.assertTrue(task.should_execute())
+        exe1 = task.next_iter
+        task.execute()
+        self.assertTrue(exe1 < task.next_iter)
+
+    def test_scheduler_loop(self):
+        def execute(*args):
+            pass
+        p = os.path.join(self.test_path, "works", "test_beat.xml")
+        arg = "--smtp-port=2525 --smtp-host=localhost --xml={0} --beat --emails=noemail@email.com".format(p)
+        with patch('pydbr.schedulerconf.Scheduler.loop') as f:
+            main(*arg.split(" "))
+            self.assertTrue(f.called)
 
 
 if __name__ == '__main__':
