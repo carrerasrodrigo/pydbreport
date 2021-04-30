@@ -87,14 +87,14 @@ class PyDbRTest(unittest.TestCase):
             "", "pydbr-mysql", None,
             "select first_name, rating from famous_people limit 2;")
         self.assertEqual(len(query), 3)
-        self.assertEqual(query[0][0], "first_name")
+        self.assertIn("first_name", query[0])
 
     def test_run_query_sqlite(self):
         db_name = os.path.join(os.path.dirname(__file__), 'test.db')
         query = run_query("sqlite", db_name, None, None, None, None,
             "select first_name, rating from famous_people limit 2;")
         self.assertEqual(len(query), 3)
-        self.assertEqual(query[0][0], "first_name")
+        self.assertIn("first_name", query[0])
 
     def test_render_table(self):
         xmls = scan_queries(os.path.join(self.test_path, "works"))
@@ -205,11 +205,19 @@ class PyDbRTest(unittest.TestCase):
         main(*arg.split(" "))
         self.assertEqual(1, len(self.server_em.messages))
 
+
     def test_query_with_no_select(self):
         p = os.path.join(self.test_path, "works", "test_update_query.xml")
         arg = "--smtp-port=2525 --smtp-host=localhost --xml={0} --emails=noemail@email.com".format(p)
+
+        total1 = run_query("mysql+pymysql", "pydbreport", "root",
+            "", "pydbr-mysql", None,
+            "select count(*) from famous_people where first_name = 'test'")[1][0]
         main(*arg.split(" "))
-        self.assertEqual(0, len(self.server_em.messages))
+        total2 = run_query("mysql+pymysql", "pydbreport", "root",
+            "", "pydbr-mysql", None,
+            "select count(*) from famous_people where first_name = 'test'")[1][0]
+        self.assertEqual(total1 + 1, total2)
 
     def test_error_log(self):
         p = os.path.join(self.test_path, "works_error", "test_error.xml")
@@ -239,7 +247,7 @@ class PyDbRTest(unittest.TestCase):
         def execute():
             pass
 
-        task = Task(cron, execute, 'task name')
+        task = Task(cron, execute, [], 'task name')
         scheduler.add_task(task)
 
         self.assertEqual(len(scheduler.tasks), 1)

@@ -21,7 +21,7 @@
             <csv>0</csv>
             <csv_name></csv_name>
             <code>
-                update famous_people set id = id;
+                INSERT INTO pydbreport.famous_people (first_name, last_name, rating) VALUES ( 'test', 'test', 1);
             </code>
         </query>
     </queries>

@@ -7,10 +7,11 @@ import logging
 import os
 import sys
 
-from jinja2 import Template
 from .schedulerconf import start_loop
 from .send_email import send_email
+from jinja2 import Template
 from sqlalchemy import create_engine
+import sqlalchemy
 from xml.etree import ElementTree as ET
 
 
@@ -69,8 +70,11 @@ def run_query(db_type, db_name, user, password, host, db_options, query):
     result = conn.execute(query)
 
     rows = []
-    if len(result.keys()) > 0:
-        rows = [result.keys()] + result.fetchall()
+    try:
+        if len(result.keys()) > 0:
+            rows = [result.keys()] + result.fetchall()
+    except sqlalchemy.exc.ResourceClosedError:
+        pass
     conn.close()
     return rows
 
