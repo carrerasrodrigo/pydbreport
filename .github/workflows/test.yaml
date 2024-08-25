@@ -1,0 +1,50 @@
+name: Python CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.10, 3.11]
+
+    services:
+      mysql:
+        image: mysql:latest
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: pydbreport
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install Dependencies
+      run: pip install .
+
+    - name: Setup Database
+      run: |
+        mysql -u root -proot -e 'CREATE SCHEMA IF NOT EXISTS `pydbreport` DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;'
+        mysql -u root -proot -e 'CREATE TABLE IF NOT EXISTS `pydbreport`.`famous_people` (`id` INT NOT NULL , `first_name` VARCHAR(150) NULL , `last_name` VARCHAR(155) NULL , `rating` INT NULL , PRIMARY KEY (`id`));'
+        mysql -u root -proot -e 'INSERT INTO `pydbreport`.`famous_people` (`id`, `first_name`, `last_name`, `rating`) VALUES (0, "Luke", "Skywalker", "10");'
+        mysql -u root -proot -e 'INSERT INTO `pydbreport`.`famous_people` (`id`, `first_name`, `last_name`, `rating`) VALUES (1, "Master", "Yoda", "20");'
+        mysql -u root -proot -e 'INSERT INTO `pydbreport`.`famous_people` (`id`, `first_name`, `last_name`, `rating`) VALUES (2, "Bruno", "Diaz", "15");'
+        mysql -u root -proot -e 'INSERT INTO `pydbreport`.`famous_people` (`id`, `first_name`, `last_name`, `rating`) VALUES (3, "Clark", "Kent", "1");'
+        mysql -u root -proot -e 'INSERT INTO `pydbreport`.`famous_people` (`id`, `first_name`, `last_name`, `rating`) VALUES (4, "wéirdnámé", "ñaéd", "1");'
+        mysql -u root -proot -e 'CREATE USER `pydbreport`@`localhost`;'
+        mysql -u root -proot -e 'GRANT ALL ON pydbreport.* TO `pydbreport`@`localhost`;'
+
+    - name: Run Tests
+      run: python tests/run.py
