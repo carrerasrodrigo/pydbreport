@@ -11,8 +11,8 @@
             <db_type>sqlite</db_type>
             <db_name>pydbreport</db_name>
             <db_user>root</db_user>
-            <db_password></db_password>
-            <db_host>pydbr-mysql</db_host>
+            <db_password>root</db_password>
+            <db_host>127.0.0.1</db_host>
             <db_options></db_options>
             <transpose>0</transpose>
             <csv>1</csv>

@@ -192,11 +192,4 @@ Then you need to specify to *pydbr* which template you want to use for your quer
 
 ### Tested
 
-This project has been tested on Python 2.7+ and Python 3.4+
-
-### Version history
-0.7.0 - Added new title tag to make the emails more readable.
-0.6.0 - Support for beat mode
-0.5.3 - Added support for insert, update and delete queries.
-0.5.0 - Added more colors to the template used to send the information.
-0.4.0 - Added support for multiple database engines via sqlalchemy.
+This project has been tested on Python 3.4+

@@ -14,14 +14,14 @@
             <db_type>mysql+pymysql</db_type>
             <db_name>pydbreport</db_name>
             <db_user>root</db_user>
-            <db_password></db_password>
-            <db_host>pydbr-mysql</db_host>
+            <db_password>root</db_password>
+            <db_host>127.0.0.1</db_host>
             <db_options>charset=utf8</db_options>
             <transpose>0</transpose>
             <csv>0</csv>
             <csv_name></csv_name>
             <code>
-                INSERT INTO pydbreport.famous_people (first_name, last_name, rating) VALUES ( 'test', 'test', 1);
+                INSERT INTO pydbreport.famous_people (first_name, last_name, rating) VALUES ('test', 'test', 1);
             </code>
         </query>
     </queries>

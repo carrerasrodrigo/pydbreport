@@ -3,19 +3,28 @@
 import logging
 import os
 import smtplib
-
 from email import encoders
 from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import formatdate
 
+logger = logging.getLogger("pydbr")
 
-logger = logging.getLogger('pydbr')
 
-
-def send_email(sfrom, to, subject, body, cc=[], bcc=[], files=[],
-        host="localhost", port=25, user=None, password=None):
+def send_email(
+    sfrom,
+    to,
+    subject,
+    body,
+    cc=[],
+    bcc=[],
+    files=[],
+    host="localhost",
+    port=25,
+    user=None,
+    password=None,
+):
     """Send an email
 
     :param sfrom: The email of the sender
@@ -31,24 +40,27 @@ def send_email(sfrom, to, subject, body, cc=[], bcc=[], files=[],
     :param password: The password that we want to use in case that
         authentication it's needed
     """
-    logger.info(u'building email {}'.format(subject))
+    logger.info("building email {}".format(subject))
 
     msg = MIMEMultipart()
-    msg['From'] = sfrom
-    msg['To'] = ",".join(to)
-    msg['Cc'] = ",".join(cc)
-    msg['Bcc'] = ",".join(bcc)
-    msg['Date'] = formatdate(localtime=True)
-    msg['Subject'] = subject
+    msg["From"] = sfrom
+    msg["To"] = ",".join(to)
+    msg["Cc"] = ",".join(cc)
+    msg["Bcc"] = ",".join(bcc)
+    msg["Date"] = formatdate(localtime=True)
+    msg["Subject"] = subject
 
     msg.attach(MIMEText(body, "html"))
 
     for f in files:
-        part = MIMEBase('application', "octet-stream")
+        part = MIMEBase("application", "octet-stream")
         with open(f, "rb") as fr:
             part.set_payload(fr.read())
         encoders.encode_base64(part)
-        part.add_header('Content-Disposition', 'attachment; filename="%s"' % os.path.basename(f))
+        part.add_header(
+            "Content-Disposition",
+            'attachment; filename="%s"' % os.path.basename(f),
+        )
         msg.attach(part)
 
     try:
@@ -57,6 +69,6 @@ def send_email(sfrom, to, subject, body, cc=[], bcc=[], files=[],
             smtp.login(user, password)
         smtp.sendmail(sfrom, to + cc + bcc, msg.as_string())
         smtp.close()
-        logger.info(u'email sent {}'.format(subject))
+        logger.info("email sent {}".format(subject))
     except Exception:
         raise

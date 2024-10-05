@@ -1,4 +1,5 @@
-PYDBR="$(cd "$(dirname "$1")/.."; pwd)" docker-compose -f compose.yaml up -d
+PYDBR="$(cd "$(dirname "$1")/.."; pwd)" docker-compose -f compose.yaml down -v
+PYDBR="$(cd "$(dirname "$1")/.."; pwd)" docker-compose -f compose.yaml up -d --force-recreate
 sleep 10
 
 docker exec -it pydbr-mysql bash -c "mysql --host=localhost --user=root < /data/tests/db_init.sql"

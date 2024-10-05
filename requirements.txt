@@ -5,3 +5,4 @@ pymysql
 croniter
 pytz
 mock
+cryptography
