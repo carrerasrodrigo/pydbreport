@@ -43,8 +43,8 @@ class PyDbRTest(unittest.TestCase):
         self.server_em.messages = []
         os.environ["DB_NAME"] = "pydbreport"
         os.environ["DB_USER"] = "root"
-        os.environ["DB_PASSWORD"] = ""
-        os.environ["DB_HOST"] = "pydbr-mysql"
+        os.environ["DB_PASSWORD"] = "root"
+        os.environ["DB_HOST"] = "127.0.0.1"
 
     @classmethod
     def setUpClass(cls):
@@ -90,8 +90,8 @@ class PyDbRTest(unittest.TestCase):
             "mysql+pymysql",
             "pydbreport",
             "root",
-            "",
-            "pydbr-mysql",
+            "root",
+            "127.0.0.1",
             None,
             "select first_name, rating from famous_people limit 2;",
         )
@@ -118,8 +118,8 @@ class PyDbRTest(unittest.TestCase):
             "mysql+pymysql",
             "pydbreport",
             "root",
-            "",
-            "pydbr-mysql",
+            "root",
+            "127.0.0.1",
             None,
             "select first_name, rating from famous_people limit 2;",
         )
@@ -261,8 +261,8 @@ class PyDbRTest(unittest.TestCase):
             "mysql+pymysql",
             "pydbreport",
             "root",
-            "",
-            "pydbr-mysql",
+            "root",
+            "127.0.0.1",
             None,
             "select count(*) from famous_people where first_name = 'test'",
         )[1][0]
@@ -271,11 +271,12 @@ class PyDbRTest(unittest.TestCase):
             "mysql+pymysql",
             "pydbreport",
             "root",
-            "",
-            "pydbr-mysql",
+            "root",
+            "127.0.0.1",
             None,
             "select count(*) from famous_people where first_name = 'test'",
         )[1][0]
+
         self.assertEqual(total1 + 1, total2)
 
     def test_error_log(self):

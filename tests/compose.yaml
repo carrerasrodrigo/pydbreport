@@ -4,23 +4,21 @@ version: '2'
 services:
   pydbr-mysql:
     container_name: pydbr-mysql
-    image: mysql:5.7
-    hostname: pydbr-mysql
+    image: mysql:8
     volumes:
       - ${PYDBR}:/data/
     environment:
-      - MYSQL_ALLOW_EMPTY_PASSWORD=true
-    ports:
-      - "3306:3306"
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=pydbreport
+    network_mode: "host"
 
   pydbr-python:
     container_name: pydbr-python
-    image: python:3.8
+    image: python:3.11
     hostname: pydbr-python
     volumes:
       - ${PYDBR}:/data/
     command:
       bash -c "pip install -r /data/requirements.txt &&
         tail -f /dev/null"
-    links:
-      - pydbr-mysql
+    network_mode: "host"

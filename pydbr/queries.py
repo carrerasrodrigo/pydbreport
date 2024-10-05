@@ -10,7 +10,7 @@ from xml.etree import ElementTree as ET
 
 import sqlalchemy
 from jinja2 import Template
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 
 from .schedulerconf import start_loop
 from .send_email import send_email
@@ -76,7 +76,8 @@ def run_query(db_type, db_name, user, password, host, db_options, query):
     )
     engine = create_engine(conn_query)
     conn = engine.connect()
-    result = conn.execute(query)
+    result = conn.execute(text(query))
+    conn.commit()
 
     rows = []
     try:
