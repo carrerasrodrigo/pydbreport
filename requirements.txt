@@ -4,7 +4,6 @@ SQLAlchemy
 pymysql
 croniter
 pytz
-mock
 cryptography
 google-auth
 google-auth-oauthlib
