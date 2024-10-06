@@ -20,6 +20,7 @@ def send_email(
     cc=[],
     bcc=[],
     files=[],
+    links=[],
     host="localhost",
     port=25,
     user=None,
@@ -49,6 +50,11 @@ def send_email(
     msg["Bcc"] = ",".join(bcc)
     msg["Date"] = formatdate(localtime=True)
     msg["Subject"] = subject
+
+    if len(links) > 0:
+        body += "<br><br>"
+        for link_data in links:
+            body += f'<a href="{link_data["link"]}">{link_data["name"]}</a><br>'
 
     msg.attach(MIMEText(body, "html"))
 

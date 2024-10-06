@@ -27,6 +27,11 @@ setup(
         "SQLAlchemy",
         "croniter",
         "pytz",
+        "cryptography",
+        "google-auth",
+        "google-auth-oauthlib",
+        "google-auth-httplib2",
+        "google-api-python-client",
     ],
     entry_points={
         "console_scripts": [
