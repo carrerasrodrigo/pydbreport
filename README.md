@@ -27,7 +27,7 @@ or you can clone this repository and install it.
 How to create a report?
 -----------------------
 
-### Report Sintax
+### Report Sintaxs
 
 First we need to create an xml file that will contain the queries with the information
 that you want to send. The format of the xml it's the following:
@@ -139,6 +139,11 @@ here you have some examples:
 - **log-folder**: The path of the folder where pydbr will keep the error log.
 - **beat**: To enable celery beat and use the internal cron system.
 - **beat-broker-config**: Configuration of the broker. By default is redis://localhost:6379/0
+- **google_sheet**: Set to 1 to enable Google Sheets integration.
+- **google_sheet_name**: The name of the Google Sheet to be created.
+- **google_sheet_share_email**: The email addresses to share the Google Sheet with.
+- **google_sheet_send_email**: Set to 1 to send an email notification after creating the Google Sheet.
+- **google_sheet_credential_file**: The path to the Google Sheets API credentials file.
 
 
 ### How to run the reports every day?
@@ -189,6 +194,9 @@ Then you need to specify to *pydbr* which template you want to use for your quer
     </queries>
 </job>
 ```
+
+### Google Sheets Integration
+You can configure PyDbReport to create and share Google Sheets with the following XML configuration
 
 ### Tested
 

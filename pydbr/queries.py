@@ -12,10 +12,18 @@ import sqlalchemy
 from jinja2 import Template
 from sqlalchemy import create_engine, text
 
+from .gdrive import create_sheet
 from .schedulerconf import start_loop
 from .send_email import send_email
 
 logger = logging.getLogger("pydbr")
+
+
+def get_val(xml, tag, default=None):
+    try:
+        return xml.find(tag).text
+    except AttributeError:
+        return default
 
 
 def read_query(p):
@@ -172,17 +180,23 @@ def __day_is_ok(xml):
     return False
 
 
-def print_email_on_screen(body, csv_files):
+def print_email_on_screen(body, csv_files, links):
     """Prints information in the standar output
 
     :param body: An string representing the body of an email
     :param csv_files: a list of csv paths
+    :param links: a list of links with the name and the link
     """
     print("Body:")
     print(body)
+
     print("CSV Files:")
     for cv in csv_files:
         print(cv)
+
+    print("Links:")
+    for link in links:
+        print(link["name"], link["link"])
 
 
 def __find_variables(queries):
@@ -200,9 +214,20 @@ def __replace_query_variables(query, variables):
     return query
 
 
+def __create_google_sheet(xml, csv_file):
+    email_list = [e.text for e in xml.find("google_sheet_share_email")]
+
+    return create_sheet(
+        parse_var(xml.find("google_sheet_credential_file").text),
+        csv_file,
+        email_list,
+    )
+
+
 def process_xml(conf, xml):
     el = []
     csvs = []
+    sheet_link_list = []
     if not __day_is_ok(xml):
         # Ignores the xml files that we dont have to run that day
         return
@@ -235,12 +260,23 @@ def process_xml(conf, xml):
         if query.find("transpose").text != "0":
             table = zip(*table)
 
+        create_csv = get_val(query, "csv", "0") != "0"
+        create_sheet = get_val(query, "google_sheet", "0") != "0"
+
         if query.find("variable") is not None:
             variables[query.find("variable").text] = str(table[1][0])
-        elif query.find("csv").text != "0":
+        elif create_csv:
             cs_name = os.path.join(conf.tmp_folder, query.find("csv_name").text)
             cs = generate_csv(cs_name, table)
             csvs.append(cs)
+        elif create_sheet:
+            cs_name = os.path.join(
+                conf.tmp_folder, query.find("google_sheet_name").text
+            )
+            cs = generate_csv(cs_name, table)
+            link = __create_google_sheet(query, cs)
+            sheet = dict(name=query.find("google_sheet_name").text, link=link)
+            sheet_link_list.append(sheet)
         else:
             el.extend(render_table(query, table))
 
@@ -262,7 +298,9 @@ def process_xml(conf, xml):
             for em in xml.findall("*/bcc"):
                 bcc.append(em.text)
 
-        if len(emails) > 0 and (len(el) > 0 or len(csvs) > 0):
+        if len(emails) > 0 and (
+            len(el) > 0 or len(csvs) > 0 or len(sheet_link_list) > 0
+        ):
             send_email(
                 xml.find("sender").text,
                 emails,
@@ -271,13 +309,14 @@ def process_xml(conf, xml):
                 cc=cc,
                 bcc=bcc,
                 files=csvs,
+                links=sheet_link_list,
                 host=conf.smtp_host,
                 port=conf.smtp_port,
                 user=conf.smtp_user,
                 password=conf.smtp_password,
             )
     else:
-        print_email_on_screen("".join(el), csvs)
+        print_email_on_screen("".join(el), csvs, sheet_link_list)
 
 
 def configure_logging(log_folder, log_level):
