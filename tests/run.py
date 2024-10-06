@@ -257,17 +257,13 @@ class PyDbRTest(unittest.TestCase):
         main(*arg.split(" "))
         self.assertEqual(1, len(self.server_em.messages))
 
-    def test_google_sheet(self, *args, **kwargs):
+    def test_google_sheet(self, create_sheet_mock, *args, **kwargs):
         p = os.path.join(self.test_path, "works", "test_google_sheet.xml")
         arg = "--smtp-port=2525 --smtp-host=localhost --xml={0} --emails=noemail@email.com".format(
             p
         )
-        with patch(
-            "pydbr.queries.create_sheet",
-            ret_value=[dict(name="x", link="https://example.com")],
-        ) as fn:
-            main(*arg.split(" "))
-            self.assertTrue(fn.called)
+        main(*arg.split(" "))
+        self.assertTrue(create_sheet_mock.called)
 
     def test_query_with_no_select(self, *args, **kwargs):
         p = os.path.join(self.test_path, "works", "test_update_query.xml")
