@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<job>
+    <emails>
+        <email>test@t.com</email>
+    </emails>
+    <subject>test report</subject>
+    <sender>sender@email.com</sender>
+    <day>*</day>
+    <queries>
+        <query>
+            <title>title test</title>
+            <db_type>mysql+pymysql</db_type>
+            <db_name>pydbreport</db_name>
+            <db_user>root</db_user>
+            <db_password>root</db_password>
+            <db_host>127.0.0.1</db_host>
+            <db_options>charset=utf8</db_options>
+            <transpose>0</transpose>
+            <csv>0</csv>
+            <csv_name>test.csv</csv_name>
+            <google_sheet>1</google_sheet>
+            <google_sheet_name>test sheet</google_sheet_name>
+            <google_sheet_share_email>
+                <email>text@example.com</email>
+            </google_sheet_share_email>
+            <google_sheet_send_email>1</google_sheet_send_email>
+            <google_sheet_credential_file>credentials.json</google_sheet_credential_file>
+            <code>
+                select first_name, rating from famous_people;
+            </code>
+        </query>
+    </queries>
+</job>

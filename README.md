@@ -4,11 +4,10 @@ PyDbReport
 PyDbReport is a light report system that sends information by email, following these steps:
 
 1. Run a specified query into a MySql db.
-2. Render the query into a html table or a csv file.
-3. Send the rendered information by email.
+2. Render the query into a html table, a csv file or a google sheet.
+3. Send the generated information by email.
 
-Every report that we want to send can contain as many queries as we want. The queries are specified by
-an xml file.
+Every report that we want to send can contain as many queries as we want. The queries are specified by an xml file.
 
 
 How to install it?
@@ -27,7 +26,7 @@ or you can clone this repository and install it.
 How to create a report?
 -----------------------
 
-### Report Sintax
+### Report sintax
 
 First we need to create an xml file that will contain the queries with the information
 that you want to send. The format of the xml it's the following:
@@ -57,6 +56,11 @@ that you want to send. The format of the xml it's the following:
             <transpose>0</transpose>
             <csv>1</csv>
             <csv_name>test.csv</csv_name>
+            <google_sheet_share_email>
+                <email>text@example.com</email>
+            </google_sheet_share_email>
+            <google_sheet_send_email>1</google_sheet_send_email>
+            <google_sheet_credential_file>credentials.json</google_sheet_credential_file>
             <code>
                 <![CDATA[
                     select first_name, rating from famous_people where age < 70;
@@ -96,6 +100,12 @@ of the month on witch the report will be excuted. If the tag **day** and **weekd
         a CDATA tag.
     - **template_path** This tag represents the absolute path of the template we want to use to render our query. If we
         miss this tag *PyDbReport* it's going to use a default template.
+    - **google_sheet** Set to 1 to enable Google Sheets integration.
+    - **google_sheet_name** The name of the Google Sheet to be created.
+    - **google_sheet_share_email** A list of email addresses to share the Google Sheet with.
+        - **email** An email.
+    - **google_sheet_send_email** Set to 1 to send an email notification after creating the Google Sheet.
+    - **google_sheet_credential_file** The path to the Google Sheets API credentials file. Supports an environment variable.
 
 
 ### Supported database engines
@@ -113,7 +123,7 @@ For **postgres** set db_type=postgresql+psycopg2 and
 
 
 ### Environment variable
-In the fields **db_name**, **db_host**, **db_user**, **db_password** it's possible to use environment variables instead of a hardcoded value. How?
+In the fields **db_name**, **db_host**, **db_user**, **db_password** **google_sheet_credential_file** it's possible to use environment variables instead of a hardcoded value. How?
 
     Instead of using
     <db_name>value</db_name> -> <db_name>$ENV:MY_ENV_VARIABLE</db_name>
