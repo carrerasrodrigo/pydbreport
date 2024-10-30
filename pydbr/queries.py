@@ -85,7 +85,10 @@ def run_query(db_type, db_name, user, password, host, db_options, query):
     engine = create_engine(conn_query)
     conn = engine.connect()
     result = conn.execute(text(query))
-    conn.commit()
+    try:
+        conn.commit()
+    except Exception:
+        pass
 
     rows = []
     try:
