@@ -93,10 +93,7 @@ def run_query(db_type, db_name, user, password, host, db_options, query):
             rows = [result.keys()] + result.fetchall()
     except sqlalchemy.exc.ResourceClosedError:
         pass
-    try:
-        conn.close()
-    except Exception:
-        pass
+    conn.close()
     return rows
 
 
