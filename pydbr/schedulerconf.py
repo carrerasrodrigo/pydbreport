@@ -42,8 +42,11 @@ class Scheduler(object):
     def loop(self):
         while True:
             for task in self.tasks:
-                if task.should_execute():
-                    task.execute()
+                try:
+                    if task.should_execute():
+                        task.execute()
+                except Exception as ex:
+                    logger.error(f"error executing {task.task_name}: {ex}")
             time.sleep(60)
 
 

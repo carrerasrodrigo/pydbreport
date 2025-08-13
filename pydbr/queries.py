@@ -418,7 +418,12 @@ def main(*args):
         start_loop(conf, process_xml, xmls)
     else:
         for xml in xmls:
-            process_xml(conf, xml)
+            try:
+                process_xml(conf, xml)
+            except Exception as ex:
+                logger.error(
+                    f"error processing {xml.find('subject').text}: {ex}"
+                )
 
     return True
 

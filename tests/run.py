@@ -5,7 +5,6 @@ import sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "pydbr"))
 
-
 import asyncore
 import base64
 import datetime
@@ -18,7 +17,6 @@ from smtpd import SMTPServer
 from unittest.mock import MagicMock, patch
 
 import pytz
-import sqlalchemy
 from croniter import croniter
 from gdrive import create_sheet
 
@@ -299,8 +297,7 @@ class PyDbRTest(unittest.TestCase):
         arg = "--smtp-port=2525 --smtp-host=localhost --xml={0} --emails=noemail@email.com --log-folder={1}".format(
             p, elog
         )
-        f_lambda = lambda: main(*arg.split(" "))
-        self.assertRaises(sqlalchemy.exc.ProgrammingError, f_lambda)
+        main(*arg.split(" "))
         with open(os.path.join(elog, "pydbr.log")) as ff:
             self.assertTrue("error query" in ff.read())
 
@@ -310,8 +307,7 @@ class PyDbRTest(unittest.TestCase):
         arg = "--smtp-port=2525 --smtp-host=localhost --xml={0} --emails=noemail@email.com --log-folder={1}".format(
             p, elog
         )
-        f_lambda = lambda: main(*arg.split(" "))
-        self.assertRaises(sqlalchemy.exc.OperationalError, f_lambda)
+        main(*arg.split(" "))
         with open(os.path.join(elog, "pydbr.log")) as ff:
             self.assertTrue("error query" in ff.read())
 
