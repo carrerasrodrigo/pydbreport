@@ -9,3 +9,4 @@ while [ $? -ne 0 ]; do
     docker exec -it pydbr-mysql bash -c "mysql --host=localhost --password=root --user=root < /data/tests/db_init.sql"
 done
 echo "done"
+PYDBR="$(cd "$(dirname "$1")/.."; pwd)" docker compose -f compose.yaml logs -f

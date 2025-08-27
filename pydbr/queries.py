@@ -251,7 +251,7 @@ def process_xml(conf, xml):
             )
         except Exception:
             logger.error("Error running query: %s", sql)
-            raise
+            return False
 
         if (
             len(table) <= 1
@@ -320,6 +320,8 @@ def process_xml(conf, xml):
             )
     else:
         print_email_on_screen("".join(el), csvs, sheet_link_list)
+
+    return True
 
 
 def configure_logging(log_folder, log_level):
@@ -419,7 +421,11 @@ def main(*args):
     else:
         for xml in xmls:
             try:
-                process_xml(conf, xml)
+                success = process_xml(conf, xml)
+                if not success:
+                    raise Exception(
+                        f"error processing {xml.find('subject').text}"
+                    )
             except Exception as ex:
                 logger.error(
                     f"error processing {xml.find('subject').text}: {ex}"
